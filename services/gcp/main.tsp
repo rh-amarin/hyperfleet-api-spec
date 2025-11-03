@@ -2,7 +2,7 @@ import "@typespec/http";
 import "@typespec/openapi";
 import "@typespec/openapi3";
 
-import "../../providers/gcp/model.tsp";
+import "./cluster/model.tsp";
 import "../../shared/clusters/";
 import "../../shared/statuses/";
 import "../../shared/nodepools/";
