@@ -577,49 +577,15 @@ components:
     Cluster:
       type: object
       required:
-        - kind
-        - name
-        - spec
-        - created_at
-        - updated_at
         - generation
         - status
         - created_by
         - updated_by
       properties:
-        kind:
-          type: string
-          default: Cluster
-        name:
-          type: string
-          description: Cluster name (unique)
-        spec:
-          type: object
-          additionalProperties: {}
-          description: |-
-            Cluster specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        id:
-          type: string
-          description: Resource identifier
-        href:
-          type: string
-          description: Resource URI
         generation:
           type: integer
           format: int32
+          minimum: 1
           description: Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
         status:
           type: object
@@ -674,8 +640,12 @@ components:
             Provides quick overview of which adapters have reported and aggregated phase.
         created_by:
           type: string
+          format: email
         updated_by:
           type: string
+          format: email
+      allOf:
+        - $ref: '#/components/schemas/ClusterBase'
       example:
         kind: Cluster
         id: cluster-123
@@ -712,8 +682,8 @@ components:
               observed_generation: 1
               created_at: '2021-01-01T00:00:00Z'
               updated_at: '2021-01-01T00:00:00Z'
-        created_by: user-123
-        updated_by: user-123
+        created_by: user-123@example.com
+        updated_by: user-123@example.com
     ClusterBase:
       type: object
       required:
@@ -726,6 +696,9 @@ components:
           default: Cluster
         name:
           type: string
+          minLength: 1
+          maxLength: 63
+          pattern: ^[a-z0-9-]+$
           description: Cluster name (unique)
         spec:
           type: object

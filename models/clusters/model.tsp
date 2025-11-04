@@ -8,6 +8,9 @@ model ClusterBase extends APIResource {
   /**
    * Cluster name (unique)
    */
+  @minLength(1)
+  @maxLength(63)
+  @pattern("^[a-z0-9-]+$")
   name: string;
 
   /** Cluster specification
@@ -18,12 +21,12 @@ model ClusterBase extends APIResource {
 }
 
 @example(exampleCluster)
-model Cluster {
-  ...ClusterBase;
+model Cluster extends ClusterBase {
 
   /**
    * Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
    */
+  @minValue(1) 
   generation: int32;
 
   /**
@@ -66,8 +69,8 @@ model Cluster {
     adapters: ConditionAvailable[];
   };
 
-  created_by: string;
-  updated_by: string;
+  @format("email") created_by: string;
+  @format("email") updated_by: string;
 }
 
 @example(exampleClusterCreateRequest)

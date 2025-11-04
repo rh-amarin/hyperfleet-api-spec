@@ -39,6 +39,6 @@ const exampleCluster: Cluster = #{
       }
     ],
   },
-  created_by: "user-123",
-  updated_by: "user-123",
+  created_by: "user-123@example.com",
+  updated_by: "user-123@example.com",
 };
