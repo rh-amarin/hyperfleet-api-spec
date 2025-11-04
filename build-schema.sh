@@ -69,12 +69,38 @@ ln -sf "$ALIASES_FILE" aliases.tsp
 echo -e "${GREEN}✓ Linked aliases.tsp → ${ALIASES_FILE}${NC}"
 echo ""
 
-# Step 2: Compile TypeSpec to generate OpenAPI schema
-echo -e "${YELLOW}Step 2: Compiling TypeSpec...${NC}"
-if tsp compile main.tsp; then
-    echo ""
-    echo -e "${GREEN}✓ Successfully generated OpenAPI schema${NC}"
-    echo -e "${GREEN}Output: tsp-output/schema/openapi.yaml${NC}"
+# Step 2: Create output directory for the provider
+OUTPUT_DIR="schemas/${PROVIDER}"
+echo -e "${YELLOW}Step 2: Preparing output directory...${NC}"
+mkdir -p "$OUTPUT_DIR"
+echo -e "${GREEN}✓ Created output directory: ${OUTPUT_DIR}${NC}"
+echo ""
+
+# Step 3: Compile TypeSpec to generate OpenAPI schema
+echo -e "${YELLOW}Step 3: Compiling TypeSpec...${NC}"
+TEMP_OUTPUT_DIR="tsp-output-${PROVIDER}"
+
+# Cleanup function to remove temporary directory on exit
+cleanup() {
+    if [ -d "$TEMP_OUTPUT_DIR" ]; then
+        rm -rf "$TEMP_OUTPUT_DIR"
+    fi
+}
+trap cleanup EXIT
+
+if tsp compile main.tsp --output-dir "$TEMP_OUTPUT_DIR"; then
+    # Move the generated schema to the provider-specific directory
+    if [ -f "${TEMP_OUTPUT_DIR}/schema/openapi.yaml" ]; then
+        mv "${TEMP_OUTPUT_DIR}/schema/openapi.yaml" "${OUTPUT_DIR}/openapi.yaml"
+        echo ""
+        echo -e "${GREEN}✓ Successfully generated OpenAPI schema${NC}"
+        echo -e "${GREEN}Output: ${OUTPUT_DIR}/openapi.yaml${NC}"
+    else
+        echo ""
+        echo -e "${RED}✗ Generated schema file not found at expected location${NC}"
+        echo "Expected: ${TEMP_OUTPUT_DIR}/schema/openapi.yaml"
+        exit 1
+    fi
 else
     echo ""
     echo -e "${RED}✗ Failed to compile TypeSpec${NC}"

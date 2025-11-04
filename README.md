@@ -60,7 +60,7 @@ The script automatically:
 1. Validates the provider parameter
 2. Re-links `aliases.tsp` to the appropriate provider aliases file
 3. Compiles the TypeSpec to generate the OpenAPI schema
-4. Outputs the result to `tsp-output/schema/openapi.yaml`
+4. Outputs the result to `schemas/{provider}/openapi.yaml` (e.g., `schemas/core/openapi.yaml` or `schemas/gcp/openapi.yaml`)
 
 **Extending to new providers**: Simply create `aliases-{provider}.tsp` and the script will automatically detect and support it.
 
