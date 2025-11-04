@@ -2,8 +2,8 @@ import "@typespec/http";
 import "@typespec/openapi";
 import "@typespec/openapi3";
 
-import "./model.tsp";
-import "../common/model.tsp";
+import "../models/nodepools/model.tsp";
+import "../models/common/model.tsp";
 
 using Http;
 using OpenAPI;

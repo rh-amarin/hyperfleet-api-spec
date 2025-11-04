@@ -1,0 +1,1 @@
+alias CoreClusterSpec = Record<unknown>;

@@ -2,7 +2,9 @@ import "@typespec/http";
 import "@typespec/openapi";
 import "@typespec/openapi3";
 
-import "./model.tsp";
+import "../models/statuses/model.tsp";
+import "../models/common/model.tsp";
+import "../models/nodepools/model.tsp";
 
 using Http;
 using OpenAPI;
@@ -51,25 +53,6 @@ interface ClusterStatuses{
     | NotFoundResponse
     | ConflictResponse;
 
-  /**
-   * Returns specific adapter status resource
-   */
-  @route("/{status_id}")
-  @get
-  @summary("Get adapter status by ID")
-  @operationId("getClusterStatusById")
-  getClusterStatusById(
-    /**
-     * Cluster ID
-     */
-     @path cluster_id: string,
-
-    /**
-     * Status ID
-     */
-     @path status_id: string,
-  ): AdapterStatus | NotFoundResponse;
-
 }
 
 //@tag("NodePool statuses")
@@ -116,25 +99,5 @@ interface NodePoolStatuses{
     | BadRequestResponse
     | NotFoundResponse
     | ConflictResponse;
-
-  /**
-   * Returns specific adapter status resource
-   */
-  @route("/{status_id}")
-  @get
-  @summary("Get adapter status by ID")
-  @operationId("getNodePoolStatusById")
-  getNodePoolStatusById(
-    /**
-     * Cluster ID
-     */
-     @path cluster_id: string,
-     @path nodepool_id: string,
-
-    /**
-     * Status ID
-     */
-     @path status_id: string,
-  ): AdapterStatus | NotFoundResponse;
 
 }

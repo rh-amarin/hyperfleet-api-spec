@@ -4,47 +4,97 @@ This project hosts the TypeSpec files to generate the HyperFleet OpenAPI specifi
 
 ## Repository Structure
 
-The repository is organized into three main directories:
+The repository is organized with root-level configuration files and three main directories:
+
+### Root-Level Files
+- **`main.tsp`** - Main TypeSpec entry point that imports all service definitions
+- **`aliases.tsp`** - Provider alias configuration file (re-linked to switch between providers)
+- **`aliases-core.tsp`** - Core provider aliases (defines `ClusterSpec` as `CoreClusterSpec` which is `Record<unknown>`)
+- **`aliases-gcp.tsp`** - GCP provider aliases (defines `ClusterSpec` as `GCPClusterSpec`)
+- **`tspconfig.yaml`** - TypeSpec compiler configuration
+
+### `/models`
+Contains shared models used by all service variants:
+
+- **`models/clusters/`** - Cluster resource definitions (interfaces and base models)
+- **`models/statuses/`** - Status resource definitions for clusters and nodepools
+- **`models/nodepools/`** - NodePool resource definitions
+- **`models/compatibility/`** - Compatibility endpoints
+- **`models/common/`** - Common models and types (APIResource, Error, QueryParams, etc.)
+
+### `/models-core`
+Contains core provider-specific model definitions:
+
+- **`models-core/cluster/model.tsp`** - Defines `CoreClusterSpec` as `Record<unknown>` (generic)
+
+### `/models-gcp`
+Contains GCP provider-specific model definitions:
+
+- **`models-gcp/cluster/model.tsp`** - Defines `GCPClusterSpec` with GCP-specific properties
 
 ### `/services`
-Contains service definitions that generate the OpenAPI specifications. Each service has its own `main.tsp` file and `tspconfig.yaml` configuration.
+Contains service definitions that generate the OpenAPI specifications:
 
-- **`services/core/`** - Core HyperFleet API service definition
-  - Uses provider-agnostic `ClusterSpec` (Record<unknown>)
-  - Output: `tsp-output/schema/openapi.yaml`
-
-- **`services/gcp/`** - GCP-specific HyperFleet API service definition
-  - Uses GCP-specific `GCPClusterSpec` model
-  - Output: `tsp-output/@typespec/openapi3/openapi.yaml`
-
-### `/shared`
-Contains shared modules used by all service variants:
-
-- **`shared/clusters/`** - Cluster resource definitions (interfaces and base models)
-- **`shared/statuses/`** - Status resource definitions for clusters and nodepools
-- **`shared/nodepools/`** - NodePool resource definitions
-- **`shared/compatibility/`** - Compatibility endpoints
-- **`shared/common/`** - Common models and types (APIResource, Error, QueryParams, etc.)
-
-### `/providers`
-Contains provider-specific model definitions that override shared types:
-
-- **`providers/core/model.tsp`** - Defines `ClusterSpec` as `Record<unknown>` (generic)
-- **`providers/gcp/model.tsp`** - Defines `ClusterSpec` as `GCPClusterSpec` (GCP-specific)
+- **`services/clusters.tsp`** - Cluster resource endpoints
+- **`services/statuses.tsp`** - Status resource endpoints
+- **`services/nodepools.tsp`** - NodePool resource endpoints
+- **`services/compatibility.tsp`** - Compatibility endpoints
 
 ## Building OpenAPI Specifications
 
-Each service has its own configuration and can be built independently:
+The repository uses a single `main.tsp` entry point. To generate either the core API or GCP API, you need to re-link the `aliases.tsp` file to point to the desired provider aliases file.
 
-### Build Core Service
+### Using the Build Script (Recommended)
+
+The easiest way to build the OpenAPI schema is using the provided `build-schema.sh` script:
+
 ```bash
-tsp compile services/core/main.tsp
+# Build Core API
+./build-schema.sh core
+
+# Build GCP API
+./build-schema.sh gcp
 ```
 
-### Build GCP Service
-```bash
-tsp compile services/gcp/main.tsp
-```
+The script automatically:
+1. Validates the provider parameter
+2. Re-links `aliases.tsp` to the appropriate provider aliases file
+3. Compiles the TypeSpec to generate the OpenAPI schema
+4. Outputs the result to `tsp-output/schema/openapi.yaml`
+
+**Extending to new providers**: Simply create `aliases-{provider}.tsp` and the script will automatically detect and support it.
+
+### Manual Build (Alternative)
+
+If you prefer to build manually:
+
+#### Build Core API
+1. Re-link `aliases.tsp` to `aliases-core.tsp`:
+   ```bash
+   ln -sf aliases-core.tsp aliases.tsp
+   ```
+   
+2. Compile the TypeSpec:
+   ```bash
+   tsp compile main.tsp
+   ```
+   
+   Output: `tsp-output/schema/openapi.yaml`
+
+#### Build GCP API
+1. Re-link `aliases.tsp` to `aliases-gcp.tsp`:
+   ```bash
+   ln -sf aliases-gcp.tsp aliases.tsp
+   ```
+   
+2. Compile the TypeSpec:
+   ```bash
+   tsp compile main.tsp
+   ```
+   
+   Output: `tsp-output/schema/openapi.yaml`
+
+**Note**: The `aliases.tsp` file controls which provider-specific `ClusterSpec` definition is used throughout the service definitions. By re-linking it to either `aliases-core.tsp` or `aliases-gcp.tsp`, you switch between the generic `Record<unknown>` spec and the GCP-specific `GCPClusterSpec`.
 
 ## Architecture
 
@@ -58,34 +108,48 @@ The HyperFleet API provides simple CRUD operations for managing cluster resource
 
 To add a new provider (e.g., AWS):
 
-1. Create provider model: `providers/aws/model.tsp`
+1. Create provider model directory: `models-aws/cluster/model.tsp`
    ```typescript
    model AWSClusterSpec {
      awsProperty1: string;
      awsProperty2: string;
    }
-   
+   ```
+
+2. Create provider aliases file: `aliases-aws.tsp`
+   ```typescript
+   import "./models-aws/cluster/model.tsp";
    alias ClusterSpec = AWSClusterSpec;
    ```
 
-2. Create service definition: `services/aws/main.tsp`
-   ```typescript
-   import "../../providers/aws/model.tsp";
-   import "../../shared/clusters/";
-   import "../../shared/statuses/";
-   // ... other shared imports
+3. To generate the AWS API, re-link `aliases.tsp`:
+   ```bash
+   ln -sf aliases-aws.tsp aliases.tsp
+   tsp compile main.tsp
    ```
 
-3. Create service config: `services/aws/tspconfig.yaml` (copy from existing service)
+## Adding a New Service
 
-## Adding a New Service Variant
+To add a new service (e.g., with additional endpoints):
 
-To create a new service variant (e.g., with additional endpoints):
+1. Create a new service file: `services/new-service.tsp`
+   ```typescript
+   import "@typespec/http";
+   import "@typespec/openapi";
+   import "../models/common/model.tsp";
+   // ... other imports as needed
+   
+   namespace HyperFleet;
+   @route("/new-resource")
+   interface NewService {
+     // ... endpoint definitions
+   }
+   ```
 
-1. Create new directory: `services/variant-name/`
-2. Copy `main.tsp` and `tspconfig.yaml` from an existing service
-3. Modify the service definition as needed
-4. Import shared modules and appropriate provider models
+2. Import the new service in `main.tsp`:
+   ```typescript
+   import "./services/new-service.tsp";
+   ```
 
 ## Dependencies
 

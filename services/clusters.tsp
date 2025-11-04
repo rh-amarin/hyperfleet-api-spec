@@ -2,9 +2,9 @@ import "@typespec/http";
 import "@typespec/openapi";
 import "@typespec/openapi3";
 
-import "./model.tsp";
-
-import "../statuses/model.tsp";
+import "../models/clusters/model.tsp";
+import "../models/common/model.tsp";
+import "../models/statuses/model.tsp";
 
 using Http;
 using OpenAPI;
@@ -39,7 +39,19 @@ interface Clusters {
   @post
   @summary("Create cluster")
   @operationId("postCluster")
-  postCluster(@body body: ClusterCreateRequest): (CreatedResponse &
-    Cluster) | Error;
+  postCluster(@body body: ClusterCreateRequest): 
+  {
+    @statusCode statusCode: 201;
+    @body cluster: Cluster;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: Error;
+  } | {
+    @statusCode statusCode: 409;
+    @body error: Error;
+  } | {
+    @statusCode statusCode: 500;
+    @body error: Error;
+  };
 
 }

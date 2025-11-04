@@ -2,11 +2,10 @@ import "@typespec/http";
 import "@typespec/openapi";
 import "@typespec/openapi3";
 
-import "./cluster/model.tsp";
-import "../../shared/clusters/";
-import "../../shared/statuses/";
-import "../../shared/nodepools/";
-import "../../shared/compatibility/";
+import "./services/clusters.tsp";
+import "./services/statuses.tsp";
+import "./services/nodepools.tsp";
+import "./services/compatibility.tsp";
 using Http;
 using OpenAPI;
 
@@ -21,10 +20,6 @@ using OpenAPI;
 @service(#{ title: "HyperFleet API" })
 @info(#{ version: "1.0.0", contact: #{ name: "HyperFleet Team" } })
 @server("http://localhost:8000", "Development")
-@tagMetadata("Clusters", #{ description: "Cluster resource CRUD operations" })
-@tagMetadata( "NodePools", #{ description: "NodePool resource CRUD operations" })
-@tagMetadata( "Cluster statuses", #{ description: "Status for Clusters" })
-@tagMetadata( "NodePool statuses", #{ description: "Status for NodePools" })
 @route("/api/hyperfleet/v1")
 namespace HyperFleet;
 

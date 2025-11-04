@@ -8,11 +8,11 @@ alias KindClusterStatus = "ClusterStatus";
 alias KindNodePoolStatus = "NodePoolStatus";
 alias KindNodePool = "NodePool";
 
-
 model ID {
     /** Resource identifier */
     id?: Identifier;
 }
+
 model ObjectReference {
     ...ID;
 
@@ -21,7 +21,6 @@ model ObjectReference {
 
     /** Resource URI */
     href?: string;
-
 }
 model ObjectReference2<Kind> {
     ...ID;
@@ -31,14 +30,13 @@ model ObjectReference2<Kind> {
 
     /** Resource URI */
     href: string;
-
 }
 
 enum ErrorCode {
-    _400:"400",
-    _403:"403",
-    _404:"404",
-    _500:"500"
+    _400: "400",
+    _403: "403",
+    _404: "404",
+    _500: "500",
 }
 
 model Error {
@@ -53,19 +51,17 @@ model Error {
     code?: string;
     reason?: string;
     operation_id?: string;
-
 }
 
 model ErrorResponse<Kind, ErrorCode> {
     kind: Kind;
-    @statusCode statusCode:ErrorCode;
+    @statusCode statusCode: ErrorCode;
     @body error: Error;
 }
-model APIResource {
-    ...ObjectReference;
 
+model APIResource extends ObjectReference {
     /** labels for the API resource as pairs of name:value strings */
-    labels: Record<string>;
+    labels?: Record<string>;
 
     @format("date-time") created_at: string;
     @format("date-time") updated_at: string;
@@ -79,9 +75,9 @@ model Page<Kind> {
 }
 
 enum OrderDirection {
-      asc,
-      desc,
-    }
+    asc,
+    desc,
+}
 
 model QueryParams {
     @query

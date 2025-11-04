@@ -1,1 +1,0 @@
-alias ClusterSpec = Record<unknown>;

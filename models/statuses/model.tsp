@@ -1,9 +1,13 @@
 import "../common/model.tsp";
+import "./example_adapter_status.tsp";
 /** Common data for status objects, part of:
  * - Status entity (stored in DB)
  * - Request payload
  */
 model ConditionBase {
+  /** Adapter name */
+  adapter: string;
+
   /*
    * Condition type
    */
@@ -29,16 +33,15 @@ model ConditionBase {
    */
   observed_generation: int32;
 
-  /** Time when the condition was created 
+  /** Time when the condition was created
    * - In an adapter reporting conditions `updated_at==created_at`
    * - In the API, `created_at` doesn't change with new updates from adapters
-  */
+   */
   @format("date-time") created_at: string;
 
   /** Time when the condition was updated
    */
   @format("date-time") updated_at: string;
-
 }
 
 /** StatusAvailable is the status condition from an adapter that is used by CLM to compute the phase.
@@ -57,7 +60,7 @@ model Condition {
   last_transition_time?: utcDateTime;
 }
 
-model ConditionRequest{
+model ConditionRequest {
   ...ConditionBase;
 }
 
@@ -65,7 +68,7 @@ model AdapterStatusCreateRequest {
   /**
    * Adapter identifier
    */
-  adapter_name: string;
+  adapter: string;
 
   /**
    * Which cluster generation this status reflects
@@ -85,41 +88,11 @@ model AdapterStatusCreateRequest {
   metadata?: Record<unknown>;
 }
 
-model AdapterStatusUpdateRequest {
-  /**
-   * Update observed generation
-   */
-  observed_generation?: int32;
-
-  /**
-   * Update conditions (service computes lastTransitionTime)
-   */
-  conditions?: {
-    type: string;
-    status: "True" | "False" | "Unknown";
-    reason?: string;
-    message?: string;
-  }[];
-
-  /**
-   * Update adapter-specific data
-   */
-  data?: Record<unknown>;
-
-  /**
-   * Update job metadata
-   */
-  metadata?: Record<unknown>;
-}
-
+@example(exampleAdapterStatus)
 model AdapterStatus {
-  ...APIResource;
-
   /** Name of the adapter that generated this status (Validator, DNS...) */
-  adapter_name: string;
+  adapter: string;
 
-  /** Reference to the cluster to which this adapter status pertains */
-  owner_references: ObjectReference;
   /**
    * Which generation for an entity (Clusters, NodePools) was current at the time of creating this status
    */
@@ -142,9 +115,8 @@ model AdapterStatus {
     job_name?: string;
     job_namespace?: string;
     attempt?: int32;
-    started_at?: utcDateTime;
-    completed_at?: utcDateTime;
+    started_at?: string;
+    completed_at?: string;
     duration?: string;
   };
-
 }

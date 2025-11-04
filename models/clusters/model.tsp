@@ -1,8 +1,10 @@
 import "../common/model.tsp";
 import "../statuses/model.tsp";
+import "../../aliases.tsp";
 
-model ClusterBase extends APIResource{
+model ClusterBase extends APIResource {
   kind: string = "Cluster";
+
   /**
    * Cluster name (unique)
    */
@@ -14,6 +16,8 @@ model ClusterBase extends APIResource{
    */
   spec: ClusterSpec;
 }
+
+@example(exampleCluster)
 model Cluster {
   ...ClusterBase;
 
@@ -31,7 +35,7 @@ model Cluster {
    * Provides quick overview of which adapters have reported and aggregated phase.
    *
    */
-   status: {
+  status: {
     /**
      * Current cluster phase (native database column).
      * Updated when adapters report status.
@@ -55,10 +59,9 @@ model Cluster {
 
     /** Time of the last complete report from adapters
      * Updated when adapters report status.
-     * Oldest `updated_at` from the adapter conditions 
-    */
+     * Oldest `updated_at` from the adapter conditions
+     */
     @format("date-time") updated_at: string;
-
 
     adapters: ConditionAvailable[];
   };
@@ -67,15 +70,8 @@ model Cluster {
   updated_by: string;
 }
 
-model ClusterUpdateRequest {
-  ...ClusterBase;
-}
+model ClusterCreateRequest extends ClusterBase {}
 
-model ClusterCreateRequest {
-  ...ClusterBase;
-}
-
-
-model ClusterList extends List{
+model ClusterList extends List {
   items: Cluster[];
 }
