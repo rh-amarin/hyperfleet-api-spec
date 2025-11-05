@@ -1,5 +1,7 @@
 import "@typespec/http";
+import "@typespec/openapi";
 using Http;
+using OpenAPI;
 
 alias Identifier = string;
 
@@ -32,13 +34,7 @@ model ObjectReference2<Kind> {
     href: string;
 }
 
-enum ErrorCode {
-    _400: "400",
-    _403: "403",
-    _404: "404",
-    _500: "500",
-}
-
+@defaultResponse
 model Error {
     id?: string;
 
@@ -62,9 +58,12 @@ model ErrorResponse<Kind, ErrorCode> {
 model APIResource extends ObjectReference {
     /** labels for the API resource as pairs of name:value strings */
     labels?: Record<string>;
-
+}
+model APICreatedResource {
     @format("date-time") created_at: string;
     @format("date-time") updated_at: string;
+    @format("email") created_by: string;
+    @format("email") updated_by: string;
 }
 
 model Page<Kind> {
@@ -79,10 +78,12 @@ enum OrderDirection {
     desc,
 }
 
-model QueryParams {
+model SearchParams {
     @query
     search?: string;
+}
 
+model QueryParams extends SearchParams {
     @query
     page?: int32 = 1;
 

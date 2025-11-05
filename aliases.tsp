@@ -1,1 +1,1 @@
-aliases-core.tsp
+aliases-gcp.tsp

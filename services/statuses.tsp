@@ -72,7 +72,7 @@ interface NodePoolStatuses{
      @path cluster_id: string,
      @path nodepool_id: string,
     ...QueryParams
-  ): Body< Page<AdapterStatus>> | NotFoundResponse;
+  ): Body< Page<AdapterStatus>> | Error;
 
   /**
    * Adapter creates its initial status object for this cluster.

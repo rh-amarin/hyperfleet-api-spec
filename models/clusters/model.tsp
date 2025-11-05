@@ -21,8 +21,8 @@ model ClusterBase extends APIResource {
 }
 
 @example(exampleCluster)
-model Cluster extends ClusterBase {
-
+model Cluster extends ClusterBase   {
+...APICreatedResource;
   /**
    * Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
    */
@@ -69,8 +69,6 @@ model Cluster extends ClusterBase {
     adapters: ConditionAvailable[];
   };
 
-  @format("email") created_by: string;
-  @format("email") updated_by: string;
 }
 
 @example(exampleClusterCreateRequest)
