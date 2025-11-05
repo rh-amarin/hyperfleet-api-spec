@@ -17,11 +17,11 @@ paths:
       operationId: getClusters
       summary: List clusters
       parameters:
-        - $ref: '#/components/parameters/QueryParams.search'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
+        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -29,6 +29,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClusterList'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       operationId: postCluster
       summary: Create cluster
@@ -46,20 +52,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cluster'
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: The request conflicts with the current state of the server.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Server error
+        default:
+          description: An unexpected error response.
           content:
             application/json:
               schema:
@@ -75,6 +69,7 @@ paths:
       operationId: getClusterById
       summary: Get cluster by ID
       parameters:
+        - $ref: '#/components/parameters/SearchParams'
         - name: cluster_id
           in: path
           required: true
@@ -86,9 +81,13 @@ paths:
           content:
             application/json:
               schema:
-                anyOf:
-                  - $ref: '#/components/schemas/Cluster'
-                  - $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Cluster'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/hyperfleet/v1/clusters/{cluster_id}/nodepools:
     get:
       operationId: getNodePoolsByClusterId
@@ -101,11 +100,11 @@ paths:
           description: Cluster ID
           schema:
             type: string
-        - $ref: '#/components/parameters/QueryParams.search'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
+        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -132,6 +131,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/NodePool'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       operationId: createNodePool
       summary: Create nodepool
@@ -150,6 +155,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NodePoolCreateResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       requestBody:
         required: true
         content:
@@ -173,11 +184,11 @@ paths:
           required: true
           schema:
             type: string
-        - $ref: '#/components/parameters/QueryParams.search'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
+        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -204,8 +215,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/AdapterStatus'
-        '404':
-          description: The server cannot find the requested resource.
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       operationId: postNodePoolStatuses
       summary: Create adapter status
@@ -258,11 +273,11 @@ paths:
           description: Cluster ID
           schema:
             type: string
-        - $ref: '#/components/parameters/QueryParams.search'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
+        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -331,11 +346,11 @@ paths:
       operationId: getCompatibility
       description: Returns the list of all nodepools
       parameters:
-        - $ref: '#/components/parameters/QueryParams.search'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
+        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -351,11 +366,11 @@ paths:
       summary: List all nodepools for cluster
       description: Returns the list of all nodepools
       parameters:
-        - $ref: '#/components/parameters/QueryParams.search'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
+        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -382,6 +397,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/NodePool'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/hyperfleet/v1/nodepools/{nodepool_id}:
     get:
       operationId: getNodePoolById
@@ -443,7 +464,7 @@ components:
         format: int32
         default: 20
       explode: false
-    QueryParams.search:
+    SearchParams:
       name: search
       in: query
       required: false
@@ -453,23 +474,25 @@ components:
   schemas:
     APIResource:
       type: object
-      required:
-        - created_at
-        - updated_at
       properties:
         labels:
           type: object
           additionalProperties:
             type: string
           description: labels for the API resource as pairs of name:value strings
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
       allOf:
         - $ref: '#/components/schemas/ObjectReference'
+    AcceleratorSpec:
+      type: object
+      required:
+        - type
+        - count
+      properties:
+        type:
+          type: string
+        count:
+          type: integer
+          minimum: 1
     AdapterStatus:
       type: object
       required:
@@ -577,11 +600,25 @@ components:
     Cluster:
       type: object
       required:
-        - generation
-        - status
+        - created_at
+        - updated_at
         - created_by
         - updated_by
+        - generation
+        - status
       properties:
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: email
+        updated_by:
+          type: string
+          format: email
         generation:
           type: integer
           format: int32
@@ -638,12 +675,6 @@ components:
             It is aggregated from adapter status updates posted to `/clusters/{id}/statuses`.
 
             Provides quick overview of which adapters have reported and aggregated phase.
-        created_by:
-          type: string
-          format: email
-        updated_by:
-          type: string
-          format: email
       allOf:
         - $ref: '#/components/schemas/ClusterBase'
       example:
@@ -756,8 +787,6 @@ components:
               - 10.96.0.0/12
           dns:
             baseDomain: example.com
-        created_at: '2021-01-01T00:00:00Z'
-        updated_at: '2021-01-01T00:00:00Z'
     ClusterList:
       type: object
       required:
@@ -919,6 +948,38 @@ components:
           $ref: '#/components/schemas/NetworkingSpec'
         dns:
           $ref: '#/components/schemas/DNSSpec'
+    GCPNodePoolSpec:
+      type: object
+      properties:
+        machineType:
+          type: string
+        diskSize:
+          type: integer
+          minimum: 10
+        diskType:
+          type: string
+          enum:
+            - pd-standard
+            - pd-ssd
+            - pd-balanced
+        zones:
+          type: array
+          items:
+            type: string
+        preemptible:
+          type: boolean
+        accelerators:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcceleratorSpec'
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+        taints:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaintSpec'
     GCPPlatformSpec:
       type: object
       properties:
@@ -971,41 +1032,23 @@ components:
       required:
         - created_at
         - updated_at
-        - name
-        - spec
+        - created_by
+        - updated_by
         - owner_references
         - status
       properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        id:
+        created_by:
           type: string
-          description: Resource identifier
-        kind:
+          format: email
+        updated_by:
           type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          description: NodePool name (unique in a cluster)
-        spec:
-          type: object
-          additionalProperties: {}
-          description: |-
-            Cluster specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
+          format: email
         owner_references:
           $ref: '#/components/schemas/ObjectReference'
         status:
@@ -1024,6 +1067,7 @@ components:
             observed_generation:
               type: integer
               format: int32
+              minimum: 1
               description: |-
                 Last generation processed by adapters
                 Updated when adapters report status.
@@ -1050,11 +1094,11 @@ components:
             - last_transition_time
             - updated_at
             - adapters
-    NodePoolCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/NodePoolBase'
+    NodePoolBase:
       type: object
       required:
-        - created_at
-        - updated_at
         - name
         - spec
       properties:
@@ -1063,12 +1107,6 @@ components:
           additionalProperties:
             type: string
           description: labels for the API resource as pairs of name:value strings
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
         id:
           type: string
           description: Resource identifier
@@ -1082,8 +1120,38 @@ components:
           type: string
           description: NodePool name (unique in a cluster)
         spec:
+          allOf:
+            - $ref: '#/components/schemas/GCPNodePoolSpec'
+          description: |-
+            Cluster specification
+            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+            But CLM will validate the schema before accepting the request
+    NodePoolCreateRequest:
+      type: object
+      required:
+        - name
+        - spec
+      properties:
+        labels:
           type: object
-          additionalProperties: {}
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
+        id:
+          type: string
+          description: Resource identifier
+        kind:
+          type: string
+          description: Resource kind
+        href:
+          type: string
+          description: Resource URI
+        name:
+          type: string
+          description: NodePool name (unique in a cluster)
+        spec:
+          allOf:
+            - $ref: '#/components/schemas/GCPNodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1093,41 +1161,25 @@ components:
       required:
         - created_at
         - updated_at
-        - name
-        - spec
+        - created_by
+        - updated_by
         - owner_references
         - status
+        - name
+        - spec
       properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        id:
+        created_by:
           type: string
-          description: Resource identifier
-        kind:
+          format: email
+        updated_by:
           type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          description: NodePool name (unique in a cluster)
-        spec:
-          type: object
-          additionalProperties: {}
-          description: |-
-            Cluster specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
+          format: email
         owner_references:
           $ref: '#/components/schemas/ObjectReference'
         status:
@@ -1146,6 +1198,7 @@ components:
             observed_generation:
               type: integer
               format: int32
+              minimum: 1
               description: |-
                 Last generation processed by adapters
                 Updated when adapters report status.
@@ -1172,6 +1225,30 @@ components:
             - last_transition_time
             - updated_at
             - adapters
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
+        id:
+          type: string
+          description: Resource identifier
+        kind:
+          type: string
+          description: Resource kind
+        href:
+          type: string
+          description: Resource URI
+        name:
+          type: string
+          description: NodePool name (unique in a cluster)
+        spec:
+          allOf:
+            - $ref: '#/components/schemas/GCPNodePoolSpec'
+          description: |-
+            Cluster specification
+            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+            But CLM will validate the schema before accepting the request
     ObjectReference:
       type: object
       properties:
@@ -1208,6 +1285,22 @@ components:
           type: string
         version:
           type: string
+    TaintSpec:
+      type: object
+      required:
+        - key
+        - effect
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        effect:
+          type: string
+          enum:
+            - NoSchedule
+            - PreferNoSchedule
+            - NoExecute
   securitySchemes:
     BearerAuth:
       type: http

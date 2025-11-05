@@ -1,1 +1,1 @@
-alias CoreClusterSpec = Record<unknown>;
+alias ClusterSpecCore = Record<unknown>;

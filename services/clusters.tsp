@@ -17,13 +17,14 @@ interface Clusters {
   @route("")
   @summary("List clusters")
   @operationId("getClusters")
-  getClusters(...QueryParams): Body<ClusterList>;
+  getClusters(...QueryParams): Body<ClusterList> | Error;
 
   @route("/{cluster_id}")
   @get
   @summary("Get cluster by ID")
   @operationId("getClusterById")
   getClusterById(
+    ...SearchParams,
     @path cluster_id: string,
   ): Cluster | Error;
 
@@ -43,15 +44,6 @@ interface Clusters {
   {
     @statusCode statusCode: 201;
     @body cluster: Cluster;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: Error;
-  } | {
-    @statusCode statusCode: 409;
-    @body error: Error;
-  } | {
-    @statusCode statusCode: 500;
-    @body error: Error;
-  };
+  } | Error;
 
 }

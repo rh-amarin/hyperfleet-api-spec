@@ -19,7 +19,7 @@ interface NodePools {
     @get
     @summary("List all nodepools for cluster")
     @operationId("getNodePools")
-    getNodePools(...QueryParams): Body<Page<NodePool>>;
+    getNodePools(...QueryParams): Body<Page<NodePool>> | Error;
 
     /**
      * Returns specific nodepool
@@ -54,7 +54,7 @@ interface NodePools {
         @path cluster_id: Identifier,
 
         ...QueryParams,
-    ): Body<Page<NodePool>>;
+    ): Body<Page<NodePool>> | Error;
 
     /**
      * Create a NodePool for a cluster
@@ -69,5 +69,6 @@ interface NodePools {
 
         @body body: NodePoolCreateRequest,
     ):
-        | (CreatedResponse & NodePoolCreateResponse);
+         (CreatedResponse & NodePoolCreateResponse)
+         | Error;
 }

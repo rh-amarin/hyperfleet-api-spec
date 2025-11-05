@@ -1,5 +1,6 @@
 import "../common/model.tsp";
 import "../statuses/model.tsp";
+import "../../aliases.tsp";
 
 model NodePoolBase {
   ...APIResource;
@@ -12,10 +13,11 @@ model NodePoolBase {
    * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
    * But CLM will validate the schema before accepting the request
    */
-  spec: Record<unknown>;
+  spec: NodePoolSpec;
 }
-model NodePool {
-    ...NodePoolBase;
+model NodePool extends NodePoolBase{
+
+    ...APICreatedResource;
     owner_references: ObjectReference;
 
     status: {
@@ -32,6 +34,7 @@ model NodePool {
          * This will be the lowest value of each adapter's observed_generation values
          * The phase value is based on this generation
          */
+        @minValue(1)
         observed_generation: int32;
 
         /**
