@@ -22,27 +22,6 @@ interface NodePools {
     getNodePools(...QueryParams): Body<Page<NodePool>> | Error;
 
     /**
-     * Returns specific nodepool
-     */
-    @route("/nodepools/{nodepool_id}")
-    @get
-    @summary("Get nodepool by ID")
-    @operationId("getNodePoolById")
-    getNodePoolById(
-        /**
-         * NodePool ID
-         */
-        @path nodepool_id: Identifier,
-    ): {
-        @statusCode statusCode: 200;
-        @body nodePool: NodePool
-    }
-    |{
-        @statusCode statusCode: 404;
-        @body error: Error;
-    };
-
-    /**
      * Returns the list of all nodepools for a cluster
      */
     @route("/clusters/{cluster_id}/nodepools")

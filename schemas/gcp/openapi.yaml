@@ -403,31 +403,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/hyperfleet/v1/nodepools/{nodepool_id}:
-    get:
-      operationId: getNodePoolById
-      summary: Get nodepool by ID
-      description: Returns specific nodepool
-      parameters:
-        - name: nodepool_id
-          in: path
-          required: true
-          description: NodePool ID
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NodePool'
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 components:
   parameters:
     QueryParams.order:
