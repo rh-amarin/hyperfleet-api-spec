@@ -45,11 +45,12 @@ model NodePoolStatus {
 
   /** Time of the last update
    * Updated when conditions are reported.
-   * Most recent `last_updated_time` from the conditions
+   * Computed as min(conditions[].last_updated_time) to detect stale adapters.
+   * Uses earliest (not latest) timestamp to ensure Sentinel can detect if any adapter has stopped reporting.
    */
   @format("date-time") last_updated_time: string;
 
-  conditions: Condition[];
+  conditions: ResourceCondition[];
 }
 
 @example(exampleNodePool)

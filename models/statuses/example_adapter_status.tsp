@@ -10,9 +10,6 @@ const exampleAdapterStatus: AdapterStatus = (#{
       status: "True",
       reason: "All validations passed",
       message: "All 30 validation tests passed",
-      observed_generation: 1,
-      created_time: "2021-01-01T10:00:00Z",
-      last_updated_time: "2021-01-01T10:00:00Z",
       last_transition_time: "2021-01-01T10:00:00Z",
     },
     #{
@@ -20,9 +17,6 @@ const exampleAdapterStatus: AdapterStatus = (#{
       status: "True",
       reason: "Validation job applied",
       message: "Validation job applied successfully",
-      observed_generation: 1,
-      created_time: "2021-01-01T10:00:00Z",
-      last_updated_time: "2021-01-01T10:00:00Z",
       last_transition_time: "2021-01-01T10:00:00Z",
     },
     #{
@@ -30,9 +24,6 @@ const exampleAdapterStatus: AdapterStatus = (#{
       status: "True",
       reason: "Validation job healthy",
       message: "Validation job is healthy",
-      observed_generation: 1,
-      created_time: "2021-01-01T10:00:00Z",
-      last_updated_time: "2021-01-01T10:00:00Z",
       last_transition_time: "2021-01-01T10:00:00Z",
     }
   ],
@@ -52,37 +43,32 @@ const exampleAdapterStatus: AdapterStatus = (#{
     },
   },
   created_time: "2021-01-01T10:00:00Z",
-  last_updated_time: "2021-01-01T10:02:00Z",
+  last_report_time: "2021-01-01T10:02:00Z",
 });
 
 // Example AdapterStatusCreateRequest (for POST /clusters/{id}/statuses)
 const exampleAdapterStatusCreateRequest: AdapterStatusCreateRequest = (#{
   adapter: "validator",
   observed_generation: 1,
+  observed_time: "2021-01-01T10:00:00Z",
   conditions: #[
     #{
       type: "Available",
       status: "True",
       reason: "All validations passed",
       message: "All 30 validation tests passed",
-      observed_generation: 1,
-      observed_time: "2021-01-01T10:00:00Z",
     },
     #{
       type: "Applied",
       status: "True",
       reason: "Validation job applied",
       message: "Validation job applied successfully",
-      observed_generation: 1,
-      observed_time: "2021-01-01T10:00:00Z",
     },
     #{
       type: "Health",
       status: "True",
       reason: "Validation job healthy",
       message: "Validation job is healthy",
-      observed_generation: 1,
-      observed_time: "2021-01-01T10:00:00Z",
     }
   ],
   metadata: #{
@@ -118,9 +104,6 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
           status: "True",
           reason: "All validations passed",
           message: "All 30 validation tests passed",
-          observed_generation: 1,
-          created_time: "2021-01-01T10:00:00Z",
-          last_updated_time: "2021-01-01T10:00:00Z",
           last_transition_time: "2021-01-01T10:00:00Z",
         },
       ],
@@ -129,7 +112,7 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
         duration: "2m",
       },
       created_time: "2021-01-01T10:00:00Z",
-      last_updated_time: "2021-01-01T10:02:00Z",
+      last_report_time: "2021-01-01T10:02:00Z",
     },
     #{
       adapter: "dns",
@@ -140,14 +123,11 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
           status: "True",
           reason: "DNS configured",
           message: "DNS records created",
-          observed_generation: 1,
-          created_time: "2021-01-01T10:01:00Z",
-          last_updated_time: "2021-01-01T10:01:00Z",
           last_transition_time: "2021-01-01T10:01:00Z",
         },
       ],
       created_time: "2021-01-01T10:01:00Z",
-      last_updated_time: "2021-01-01T10:01:30Z",
+      last_report_time: "2021-01-01T10:01:30Z",
     },
   ],
 });
