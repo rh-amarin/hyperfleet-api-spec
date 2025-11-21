@@ -2,24 +2,6 @@ import "../common/model.tsp";
 import "../statuses/model.tsp";
 import "../../aliases.tsp";
 
-model ClusterBase extends APIResource {
-  kind: string = "Cluster";
-
-  /**
-   * Cluster name (unique)
-   */
-  @minLength(1)
-  @maxLength(63)
-  @pattern("^[a-z0-9-]+$")
-  name: string;
-
-  /** Cluster specification
-   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-   * But CLM will validate the schema before accepting the request
-   */
-  spec: ClusterSpec;
-}
-
 /**
  * Cluster status computed from all status conditions.
  *
@@ -61,8 +43,13 @@ model ClusterStatus {
 }
 
 @example(exampleCluster)
-model Cluster extends ClusterBase   {
-...APICreatedResource;
+model Cluster extends APIResourceCreated {
+
+  /** Cluster specification
+   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+   * But CLM will validate the schema before accepting the request
+   */
+  spec: ClusterSpec;
   /**
    * Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
    */
@@ -74,7 +61,13 @@ model Cluster extends ClusterBase   {
 }
 
 @example(exampleClusterCreateRequest)
-model ClusterCreateRequest extends ClusterBase {}
+model ClusterCreateRequest extends APIResourceRequest {
+  /** Cluster specification
+   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+   * But CLM will validate the schema before accepting the request
+   */
+  spec: ClusterSpec;
+}
 
 model ClusterList extends List {
   items: Cluster[];

@@ -12,23 +12,14 @@ alias KindNodePool = "NodePool";
 
 model ID {
     /** Resource identifier */
-    id?: Identifier;
+    id: Identifier;
 }
 
 model ObjectReference {
     ...ID;
 
     /** Resource kind */
-    kind?: string;
-
-    /** Resource URI */
-    href?: string;
-}
-model ObjectReference2<Kind> {
-    ...ID;
-
-    /** Resource kind */
-    kind: Kind;
+    kind: string;
 
     /** Resource URI */
     href: string;
@@ -55,11 +46,33 @@ model ErrorResponse<Kind, ErrorCode> {
     @body error: Error;
 }
 
-model APIResource extends ObjectReference {
+
+model APIResourceRequest {
+    /**
+     * Resource name (unique)
+     */
+    @minLength(1)
+    @maxLength(63)
+    @pattern("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
+    name: string;
+
+    kind: string;
+
     /** labels for the API resource as pairs of name:value strings */
     labels?: Record<string>;
 }
-model APICreatedResource {
+
+model APIResourceCreated extends ObjectReference {
+    /**
+     * Resource name (unique)
+     */
+    @minLength(1)
+    @maxLength(63)
+    @pattern("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
+    name: string;
+
+    /** labels for the API resource as pairs of name:value strings */
+    labels?: Record<string>;
     @format("date-time") created_time: string;
     @format("date-time") updated_time: string;
     @format("email") created_by: string;

@@ -2,20 +2,6 @@ import "../common/model.tsp";
 import "../statuses/model.tsp";
 import "../../aliases.tsp";
 
-model NodePoolBase {
-  ...APIResource;
-  /**
-   * NodePool name (unique in a cluster)
-   */
-  name: string;
-
-  /** Cluster specification
-   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-   * But CLM will validate the schema before accepting the request
-   */
-  spec: NodePoolSpec;
-}
-
 /**
  * NodePool status computed from all status conditions.
  *
@@ -54,21 +40,23 @@ model NodePoolStatus {
 }
 
 @example(exampleNodePool)
-model NodePool extends NodePoolBase{
-
-    ...APICreatedResource;
-    owner_references: ObjectReference;
-
-    status: NodePoolStatus;
+model NodePool extends APIResourceCreated {
+  /** Cluster specification
+   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+   * But CLM will validate the schema before accepting the request
+   */
+  spec: NodePoolSpec;
+  owner_references: ObjectReference;
+  status: NodePoolStatus;
 }
 
 @example(exampleNodePoolCreateRequest)
-model NodePoolCreateRequest {
-    ...NodePoolBase;
-}
-
-model NodePoolCreateResponse {
-    ...NodePool
+model NodePoolCreateRequest extends APIResourceRequest {
+  /** Cluster specification
+   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+   * But CLM will validate the schema before accepting the request
+   */
+  spec: NodePoolSpec;
 }
 
 model NodePoolList extends List {

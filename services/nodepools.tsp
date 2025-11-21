@@ -48,7 +48,7 @@ interface NodePools {
 
         @body body: NodePoolCreateRequest,
     ):
-         (CreatedResponse & NodePoolCreateResponse)
+         (CreatedResponse & NodePool)
          | Error;
 
     /**

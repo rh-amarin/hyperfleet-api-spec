@@ -135,7 +135,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NodePoolCreateResponse'
+                $ref: '#/components/schemas/NodePool'
         default:
           description: An unexpected error response.
           content:
@@ -402,16 +402,59 @@ components:
         type: string
       explode: false
   schemas:
-    APIResource:
+    APIResourceCreated:
       type: object
+      required:
+        - name
+        - created_time
+        - updated_time
+        - created_by
+        - updated_by
       properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 63
+          pattern: ^[a-z0-9-]+$
+          description: Resource name (unique)
         labels:
           type: object
           additionalProperties:
             type: string
           description: labels for the API resource as pairs of name:value strings
+        created_time:
+          type: string
+          format: date-time
+        updated_time:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: email
+        updated_by:
+          type: string
+          format: email
       allOf:
         - $ref: '#/components/schemas/ObjectReference'
+    APIResourceRequest:
+      type: object
+      required:
+        - name
+        - kind
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 63
+          pattern: ^[a-z0-9-]+$
+          description: Resource name (unique)
+        kind:
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
     AcceleratorSpec:
       type: object
       required:
@@ -652,25 +695,17 @@ components:
     Cluster:
       type: object
       required:
-        - created_time
-        - updated_time
-        - created_by
-        - updated_by
+        - spec
         - generation
         - status
       properties:
-        created_time:
-          type: string
-          format: date-time
-        updated_time:
-          type: string
-          format: date-time
-        created_by:
-          type: string
-          format: email
-        updated_by:
-          type: string
-          format: email
+        spec:
+          allOf:
+            - $ref: '#/components/schemas/GCPClusterSpec'
+          description: |-
+            Cluster specification
+            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+            But CLM will validate the schema before accepting the request
         generation:
           type: integer
           format: int32
@@ -679,7 +714,7 @@ components:
         status:
           $ref: '#/components/schemas/ClusterStatus'
       allOf:
-        - $ref: '#/components/schemas/ClusterBase'
+        - $ref: '#/components/schemas/APIResourceCreated'
       example:
         kind: Cluster
         id: cluster-123
@@ -735,22 +770,11 @@ components:
               last_transition_time: '2021-01-01T10:01:00Z'
         created_by: user-123@example.com
         updated_by: user-123@example.com
-    ClusterBase:
+    ClusterCreateRequest:
       type: object
       required:
-        - kind
-        - name
         - spec
       properties:
-        kind:
-          type: string
-          default: Cluster
-        name:
-          type: string
-          minLength: 1
-          maxLength: 63
-          pattern: ^[a-z0-9-]+$
-          description: Cluster name (unique)
         spec:
           allOf:
             - $ref: '#/components/schemas/GCPClusterSpec'
@@ -759,11 +783,7 @@ components:
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
             But CLM will validate the schema before accepting the request
       allOf:
-        - $ref: '#/components/schemas/APIResource'
-    ClusterCreateRequest:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/ClusterBase'
+        - $ref: '#/components/schemas/APIResourceRequest'
       example:
         kind: Cluster
         name: cluster-123
@@ -1030,31 +1050,23 @@ components:
     NodePool:
       type: object
       required:
-        - created_time
-        - updated_time
-        - created_by
-        - updated_by
+        - spec
         - owner_references
         - status
       properties:
-        created_time:
-          type: string
-          format: date-time
-        updated_time:
-          type: string
-          format: date-time
-        created_by:
-          type: string
-          format: email
-        updated_by:
-          type: string
-          format: email
+        spec:
+          allOf:
+            - $ref: '#/components/schemas/NodePoolSpecGCP'
+          description: |-
+            Cluster specification
+            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
+            But CLM will validate the schema before accepting the request
         owner_references:
           $ref: '#/components/schemas/ObjectReference'
         status:
           $ref: '#/components/schemas/NodePoolStatus'
       allOf:
-        - $ref: '#/components/schemas/NodePoolBase'
+        - $ref: '#/components/schemas/APIResourceCreated'
       example:
         kind: NodePool
         id: nodepool-123
@@ -1113,59 +1125,11 @@ components:
               created_time: '2021-01-01T10:01:00Z'
               last_updated_time: '2021-01-01T10:01:00Z'
               last_transition_time: '2021-01-01T10:01:00Z'
-    NodePoolBase:
-      type: object
-      required:
-        - name
-        - spec
-      properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-        id:
-          type: string
-          description: Resource identifier
-        kind:
-          type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          description: NodePool name (unique in a cluster)
-        spec:
-          allOf:
-            - $ref: '#/components/schemas/NodePoolSpecGCP'
-          description: |-
-            Cluster specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
     NodePoolCreateRequest:
       type: object
       required:
-        - name
         - spec
       properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-        id:
-          type: string
-          description: Resource identifier
-        kind:
-          type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          description: NodePool name (unique in a cluster)
         spec:
           allOf:
             - $ref: '#/components/schemas/NodePoolSpecGCP'
@@ -1173,8 +1137,11 @@ components:
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
             But CLM will validate the schema before accepting the request
+      allOf:
+        - $ref: '#/components/schemas/APIResourceRequest'
       example:
         name: worker-pool-1
+        kind: NodePool
         labels:
           environment: production
           pooltype: worker
@@ -1198,58 +1165,6 @@ components:
             minNodes: 1
             maxNodes: 10
             targetCPUUtilization: 80
-    NodePoolCreateResponse:
-      type: object
-      required:
-        - created_time
-        - updated_time
-        - created_by
-        - updated_by
-        - owner_references
-        - status
-        - name
-        - spec
-      properties:
-        created_time:
-          type: string
-          format: date-time
-        updated_time:
-          type: string
-          format: date-time
-        created_by:
-          type: string
-          format: email
-        updated_by:
-          type: string
-          format: email
-        owner_references:
-          $ref: '#/components/schemas/ObjectReference'
-        status:
-          $ref: '#/components/schemas/NodePoolStatus'
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-        id:
-          type: string
-          description: Resource identifier
-        kind:
-          type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          description: NodePool name (unique in a cluster)
-        spec:
-          allOf:
-            - $ref: '#/components/schemas/NodePoolSpecGCP'
-          description: |-
-            Cluster specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
     NodePoolList:
       type: object
       required:
@@ -1335,6 +1250,10 @@ components:
         This object is computed by the service and CANNOT be modified directly.
     ObjectReference:
       type: object
+      required:
+        - id
+        - kind
+        - href
       properties:
         id:
           type: string
