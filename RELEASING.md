@@ -107,8 +107,7 @@ diff /tmp/verify-core.yaml schemas/core/openapi.yaml
 
 ### 6. Announce Release
 
-- Notify relevant teams (Sentinel, adapters, consumers)
-- Update any dependent repositories
+- Notify consumers and stakeholders
 - Update documentation links if needed
 
 ## Release Notes Template

@@ -178,8 +178,7 @@ If you prefer to build manually:
 The HyperFleet API provides simple CRUD operations for managing cluster resources and their status history:
 
 - **Simple CRUD only**: No business logic, no event creation
-- **Sentinel operator**: Handles all orchestration logic
-- **Adapters**: Handle the specifics of managing provider-specific specs
+- **Separation of concerns**: API layer focuses on data persistence; orchestration logic is handled by external components
 
 ## Adding a New Provider
 
