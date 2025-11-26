@@ -22,8 +22,8 @@ const exampleAdapterStatus: AdapterStatus = (#{
     #{
       type: "Health",
       status: "True",
-      reason: "Validation job healthy",
-      message: "Validation job is healthy",
+      reason: "All adapter operations completed successfully",
+      message: "All adapter runtime operations completed successfully",
       last_transition_time: "2021-01-01T10:00:00Z",
     }
   ],
@@ -67,8 +67,8 @@ const exampleAdapterStatusCreateRequest: AdapterStatusCreateRequest = (#{
     #{
       type: "Health",
       status: "True",
-      reason: "Validation job healthy",
-      message: "Validation job is healthy",
+      reason: "All adapter operations completed successfully",
+      message: "All adapter runtime operations completed successfully",
     }
   ],
   metadata: #{

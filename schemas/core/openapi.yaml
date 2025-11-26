@@ -467,8 +467,8 @@ components:
             last_transition_time: '2021-01-01T10:00:00Z'
           - type: Health
             status: 'True'
-            reason: Validation job healthy
-            message: Validation job is healthy
+            reason: All adapter operations completed successfully
+            message: All adapter runtime operations completed successfully
             last_transition_time: '2021-01-01T10:00:00Z'
         metadata:
           job_name: validator-job-abc123
@@ -555,8 +555,8 @@ components:
             message: Validation job applied successfully
           - type: Health
             status: 'True'
-            reason: Validation job healthy
-            message: Validation job is healthy
+            reason: All adapter operations completed successfully
+            message: All adapter runtime operations completed successfully
         metadata:
           job_name: validator-job-abc123
           job_namespace: hyperfleet-system

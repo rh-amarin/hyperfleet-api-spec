@@ -1,0 +1,48 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Core schema
+        run: ./build-schema.sh core
+
+      - name: Build GCP schema
+        run: ./build-schema.sh gcp
+
+      - name: Prepare release assets
+        run: |
+          cp schemas/core/openapi.yaml core-openapi.yaml
+          cp schemas/gcp/openapi.yaml gcp-openapi.yaml
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            core-openapi.yaml
+            gcp-openapi.yaml
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
