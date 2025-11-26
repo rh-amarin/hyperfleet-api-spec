@@ -5,7 +5,9 @@ import "@typespec/openapi3";
 import "./services/clusters.tsp";
 import "./services/statuses.tsp";
 import "./services/nodepools.tsp";
-import "./services/compatibility.tsp";
+// Provider-specific security is imported via aliases.tsp
+import "./aliases.tsp";
+
 using Http;
 using OpenAPI;
 
@@ -18,8 +20,8 @@ using OpenAPI;
  *
  */
 @service(#{ title: "HyperFleet API" })
-@info(#{ version: "1.0.0", contact: #{ name: "HyperFleet Team" } })
-@server("http://localhost:8000", "Development")
+@info(#{ version: "1.0.0", contact: #{ name: "HyperFleet Team" }, license: #{ name: "Apache 2.0" ,url: "https://www.apache.org/licenses/LICENSE-2.0"} })
+@server("https://hyperfleet.redhat.com", "Production")
 @route("/api/hyperfleet/v1")
 namespace HyperFleet;
 

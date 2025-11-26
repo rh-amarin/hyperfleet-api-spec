@@ -26,32 +26,10 @@ interface ClusterStatuses{
      */
      @path cluster_id: string,
     ...QueryParams
-  ): Body<AdapterStatusList> | NotFoundResponse;
-
-  /**
-   * Adapter creates or updates its status report for this cluster.
-   * If adapter already has a status, it will be updated (upsert by adapter name).
-   *
-   * Response includes the full adapter status with all conditions.
-   * Adapter should call this endpoint every time it evaluates the cluster.
-   *
-   */
-  @route("")
-  @post
-  @summary("Create or update adapter status")
-  @operationId("postClusterStatuses")
-  postClusterStatuses(
-    /**
-     * Cluster ID
-     */
-     @path cluster_id: string,
-
-    @body body: AdapterStatusCreateRequest,
-  ):
-    | (CreatedResponse & AdapterStatus)
-    | BadRequestResponse
+  ): Body<AdapterStatusList> 
     | NotFoundResponse
-    | ConflictResponse;
+    | BadRequestResponse;
+
 
 }
 
@@ -72,32 +50,8 @@ interface NodePoolStatuses{
      @path cluster_id: string,
      @path nodepool_id: string,
     ...QueryParams
-  ): Body<AdapterStatusList> | Error;
-
-  /**
-   * Adapter creates or updates its status report for this nodepool.
-   * If adapter already has a status, it will be updated (upsert by adapter name).
-   *
-   * Response includes the full adapter status with all conditions.
-   * Adapter should call this endpoint every time it evaluates the nodepool.
-   *
-   */
-  @route("")
-  @post
-  @summary("Create or update adapter status")
-  @operationId("postNodePoolStatuses")
-  postNodePoolStatuses(
-    /**
-     * Cluster ID
-     */
-     @path cluster_id: string,
-     @path nodepool_id: string,
-
-    @body body: AdapterStatusCreateRequest,
-  ):
-    | (CreatedResponse & AdapterStatus)
-    | BadRequestResponse
-    | NotFoundResponse
-    | ConflictResponse;
+  ): Body<AdapterStatusList> 
+    | Error
+    | BadRequestResponse;
 
 }

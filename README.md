@@ -65,7 +65,6 @@ Contains shared models used by all service variants:
 - **`models/clusters/`** - Cluster resource definitions (interfaces and base models)
 - **`models/statuses/`** - Status resource definitions for clusters and nodepools
 - **`models/nodepools/`** - NodePool resource definitions
-- **`models/compatibility/`** - Compatibility endpoints
 - **`models/common/`** - Common models and types (APIResource, Error, QueryParams, etc.)
 
 ### `/models-core`
@@ -82,9 +81,24 @@ Contains GCP provider-specific model definitions:
 Contains service definitions that generate the OpenAPI specifications:
 
 - **`services/clusters.tsp`** - Cluster resource endpoints
-- **`services/statuses.tsp`** - Status resource endpoints
+- **`services/statuses.tsp`** - Status resource endpoints (GET only - public API)
+- **`services/statuses-internal.tsp`** - Status write endpoints (POST - internal API, see below)
 - **`services/nodepools.tsp`** - NodePool resource endpoints
-- **`services/compatibility.tsp`** - Compatibility endpoints
+
+#### Public vs Internal API Split
+
+The status endpoints are split into two files to support different API consumers:
+
+| File | Operations | Audience | Included in Build |
+|------|------------|----------|-------------------|
+| `statuses.tsp` | GET (read) | External clients | ✅ Yes (default) |
+| `statuses-internal.tsp` | POST (write) | Internal adapters | ❌ No (opt-in) |
+
+**Why the split?**
+- **External clients** (UI, CLI, monitoring) only need to read status information
+- **Internal adapters** (validator, provisioner, dns) need to write/update status reports
+- Separating these allows generating different API contracts for different audiences
+
 
 ## Prerequisites
 
@@ -121,23 +135,53 @@ This installs all required TypeSpec libraries to the local `node_modules/` direc
 
 The repository uses a single `main.tsp` entry point. To generate either the core API or GCP API, you need to re-link the `aliases.tsp` file to point to the desired provider aliases file.
 
-### Using the Build Script (Recommended)
+### Output Formats
 
-The easiest way to build the OpenAPI schema is using the provided `build-schema.sh` script:
+The build system supports two OpenAPI formats:
+- **OpenAPI 3.0** (default) - Modern format with full feature support
+- **OpenAPI 2.0 (Swagger)** - Legacy format for compatibility with older tools
+
+### Using npm Scripts (Recommended)
+
+The easiest way to build the OpenAPI schema is using the provided npm scripts:
 
 ```bash
-# Build Core API
-./build-schema.sh core
+# Build OpenAPI 3.0 only
+npm run build:core       # Build Core API (OpenAPI 3.0)
+npm run build:gcp        # Build GCP API (OpenAPI 3.0)
 
-# Build GCP API
+# Build both OpenAPI 3.0 and OpenAPI 2.0 (Swagger)
+npm run build:core:swagger   # Build Core API with Swagger
+npm run build:gcp:swagger    # Build GCP API with Swagger
+
+# Build all providers with both formats
+npm run build:all
+```
+
+### Using the Build Script Directly
+
+You can also use the `build-schema.sh` script directly:
+
+```bash
+# Build OpenAPI 3.0 only
+./build-schema.sh core
 ./build-schema.sh gcp
+
+# Build with OpenAPI 2.0 (Swagger) output
+./build-schema.sh core --swagger
+./build-schema.sh gcp --swagger
+# or use the alias:
+./build-schema.sh gcp --openapi2
 ```
 
 The script automatically:
 1. Validates the provider parameter
 2. Re-links `aliases.tsp` to the appropriate provider aliases file
-3. Compiles the TypeSpec to generate the OpenAPI schema
-4. Outputs the result to `schemas/{provider}/openapi.yaml` (e.g., `schemas/core/openapi.yaml` or `schemas/gcp/openapi.yaml`)
+3. Compiles the TypeSpec to generate the OpenAPI 3.0 schema
+4. (If `--swagger` flag is used) Converts OpenAPI 3.0 to OpenAPI 2.0 (Swagger)
+5. Outputs the results to `schemas/{provider}/`:
+   - `openapi.yaml` - OpenAPI 3.0 specification
+   - `swagger.yaml` - OpenAPI 2.0 (Swagger) specification (if `--swagger` flag is used)
 
 **Extending to new providers**: Simply create `aliases-{provider}.tsp` and the script will automatically detect and support it.
 
@@ -158,6 +202,12 @@ If you prefer to build manually:
    
    Output: `tsp-output/schema/openapi.yaml`
 
+3. (Optional) Convert to OpenAPI 2.0 (Swagger):
+   ```bash
+   npx api-spec-converter --from=openapi_3 --to=swagger_2 --syntax=yaml \
+     tsp-output/schema/openapi.yaml > tsp-output/schema/swagger.yaml
+   ```
+
 #### Build GCP API
 1. Re-link `aliases.tsp` to `aliases-gcp.tsp`:
    ```bash
@@ -170,6 +220,12 @@ If you prefer to build manually:
    ```
    
    Output: `tsp-output/schema/openapi.yaml`
+
+3. (Optional) Convert to OpenAPI 2.0 (Swagger):
+   ```bash
+   npx api-spec-converter --from=openapi_3 --to=swagger_2 --syntax=yaml \
+     tsp-output/schema/openapi.yaml > tsp-output/schema/swagger.yaml
+   ```
 
 **Note**: The `aliases.tsp` file controls which provider-specific `ClusterSpec` definition is used throughout the service definitions. By re-linking it to either `aliases-core.tsp` or `aliases-gcp.tsp`, you switch between the generic `Record<unknown>` spec and the GCP-specific `GCPClusterSpec`.
 
@@ -233,6 +289,7 @@ To add a new service (e.g., with additional endpoints):
 - `@typespec/http` - HTTP protocol support
 - `@typespec/openapi` - OpenAPI decorators
 - `@typespec/openapi3` - OpenAPI 3.0 emitter
+- `api-spec-converter` - Converts OpenAPI 3.0 to OpenAPI 2.0 (Swagger)
 
 
 ## Developing with the Visual Studio Typespec extension

@@ -17,7 +17,9 @@ interface Clusters {
   @route("")
   @summary("List clusters")
   @operationId("getClusters")
-  getClusters(...QueryParams): Body<ClusterList> | Error;
+  getClusters(...QueryParams): Body<ClusterList> 
+    | Error
+    | BadRequestResponse;
 
   @route("/{cluster_id}")
   @get
@@ -26,7 +28,9 @@ interface Clusters {
   getClusterById(
     ...SearchParams,
     @path cluster_id: string,
-  ): Cluster | Error;
+  ): Cluster 
+    | Error
+    | BadRequestResponse;
 
   /**
    * Create a new cluster resource.
@@ -44,6 +48,7 @@ interface Clusters {
   {
     @statusCode statusCode: 201;
     @body cluster: Cluster;
-  } | Error;
+  } | Error 
+    | BadRequestResponse;
 
 }

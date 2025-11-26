@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Build HyperFleet OpenAPI Schema
-# Usage: ./build-schema.sh [provider]
+# Usage: ./build-schema.sh [provider] [--swagger|--openapi2]
 #   provider: core, gcp, or any provider with aliases-{provider}.tsp file
+#   --swagger, --openapi2: Also generate OpenAPI 2.0 (Swagger) format
 
 set -e
 
@@ -12,8 +13,30 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Get the provider from command line argument
-PROVIDER="${1:-core}"
+# Parse arguments
+PROVIDER=""
+GENERATE_SWAGGER=false
+
+for arg in "$@"; do
+    case $arg in
+        --swagger|--openapi2)
+            GENERATE_SWAGGER=true
+            ;;
+        -*)
+            echo -e "${RED}Error: Unknown option: $arg${NC}"
+            echo "Usage: $0 [provider] [--swagger|--openapi2]"
+            exit 1
+            ;;
+        *)
+            if [ -z "$PROVIDER" ]; then
+                PROVIDER="$arg"
+            fi
+            ;;
+    esac
+done
+
+# Default provider to core if not specified
+PROVIDER="${PROVIDER:-core}"
 
 # Script directory (where the script is located)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,8 +45,9 @@ cd "$SCRIPT_DIR"
 # Validate provider argument
 if [ -z "$PROVIDER" ]; then
     echo -e "${RED}Error: Provider argument is required${NC}"
-    echo "Usage: $0 [provider]"
+    echo "Usage: $0 [provider] [--swagger|--openapi2]"
     echo "  provider: core, gcp, or any provider with aliases-{provider}.tsp file"
+    echo "  --swagger, --openapi2: Also generate OpenAPI 2.0 (Swagger) format"
     exit 1
 fi
 
@@ -57,7 +81,21 @@ if ! command -v tsp &> /dev/null; then
     exit 1
 fi
 
+# Check if api-spec-converter is available when swagger output is requested
+if [ "$GENERATE_SWAGGER" = true ]; then
+    if ! npx api-spec-converter --version &> /dev/null; then
+        echo -e "${RED}Error: api-spec-converter not found. Please install it.${NC}"
+        echo "Install with: npm install --save-dev api-spec-converter"
+        exit 1
+    fi
+fi
+
 echo -e "${GREEN}Building HyperFleet API schema for provider: ${PROVIDER}${NC}"
+if [ "$GENERATE_SWAGGER" = true ]; then
+    echo -e "${GREEN}Output formats: OpenAPI 3.0 + OpenAPI 2.0 (Swagger)${NC}"
+else
+    echo -e "${GREEN}Output format: OpenAPI 3.0${NC}"
+fi
 echo ""
 
 # Step 1: Re-link aliases.tsp to the provider-specific aliases file
@@ -93,7 +131,7 @@ if tsp compile main.tsp --output-dir "$TEMP_OUTPUT_DIR"; then
     if [ -f "${TEMP_OUTPUT_DIR}/schema/openapi.yaml" ]; then
         mv "${TEMP_OUTPUT_DIR}/schema/openapi.yaml" "${OUTPUT_DIR}/openapi.yaml"
         echo ""
-        echo -e "${GREEN}✓ Successfully generated OpenAPI schema${NC}"
+        echo -e "${GREEN}✓ Successfully generated OpenAPI 3.0 schema${NC}"
         echo -e "${GREEN}Output: ${OUTPUT_DIR}/openapi.yaml${NC}"
     else
         echo ""
@@ -107,3 +145,25 @@ else
     exit 1
 fi
 
+# Step 4: Convert to OpenAPI 2.0 (Swagger) if requested
+if [ "$GENERATE_SWAGGER" = true ]; then
+    echo ""
+    echo -e "${YELLOW}Step 4: Converting to OpenAPI 2.0 (Swagger)...${NC}"
+    
+    if npx api-spec-converter \
+        --from=openapi_3 \
+        --to=swagger_2 \
+        --syntax=yaml \
+        "${OUTPUT_DIR}/openapi.yaml" > "${OUTPUT_DIR}/swagger.yaml" 2>/dev/null; then
+        echo -e "${GREEN}✓ Successfully generated OpenAPI 2.0 (Swagger) schema${NC}"
+        echo -e "${GREEN}Output: ${OUTPUT_DIR}/swagger.yaml${NC}"
+    else
+        echo -e "${RED}✗ Failed to convert to OpenAPI 2.0 (Swagger)${NC}"
+        echo "The OpenAPI 3.0 schema may contain features not supported in OpenAPI 2.0"
+        rm -f "${OUTPUT_DIR}/swagger.yaml"
+        exit 1
+    fi
+fi
+
+echo ""
+echo -e "${GREEN}Build complete!${NC}"
