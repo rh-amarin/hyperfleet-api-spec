@@ -17,6 +17,6 @@ interface Compatibility {
     @route("/compatibility")
     @get
     @operationId("getCompatibility")
-    @useAuth(BearerAuth)
+    @useAuth(HyperFleet.BearerAuth)
     getNodePools(...QueryParams): Body<string>;
 }

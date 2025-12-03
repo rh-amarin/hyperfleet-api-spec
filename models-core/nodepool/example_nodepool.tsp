@@ -18,14 +18,14 @@ const exampleNodePool: NodePool = #{
     href: "https://api.hyperfleet.com/v1/clusters/cluster-123",
   },
   status: #{
-    phase: "Ready",
+    phase: ResourcePhase.Ready,
     last_transition_time: "2021-01-01T10:00:00Z",
     observed_generation: 1,
     last_updated_time: "2021-01-01T10:02:00Z",
     conditions: #[
       #{
         type: "ValidationSuccessful",
-        status: "True",
+        status: ConditionStatus.True,
         reason: "All validations passed",
         message: "NodePool validation passed",
         observed_generation: 1,
@@ -35,7 +35,7 @@ const exampleNodePool: NodePool = #{
       },
       #{
         type: "NodePoolSuccessful",
-        status: "True",
+        status: ConditionStatus.True,
         reason: "NodePool provisioned successfully",
         message: "NodePool has been scaled to desired count",
         observed_generation: 1,

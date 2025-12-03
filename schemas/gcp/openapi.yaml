@@ -366,7 +366,6 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/OrderDirection'
-        default: desc
       explode: false
     QueryParams.orderBy:
       name: orderBy
@@ -583,13 +582,8 @@ components:
     AdapterStatusList:
       type: object
       required:
-        - kind
         - items
       properties:
-        kind:
-          type: string
-          enum:
-            - AdapterStatusList
         items:
           type: array
           items:
@@ -649,6 +643,20 @@ components:
           type: string
         scaleUpDelay:
           type: string
+    BearerAuth:
+      type: object
+      required:
+        - type
+        - scheme
+      properties:
+        type:
+          type: string
+          enum:
+            - http
+        scheme:
+          type: string
+          enum:
+            - bearer
     Cluster:
       type: object
       required:
@@ -818,11 +826,8 @@ components:
         - conditions
       properties:
         phase:
-          type: string
-          enum:
-            - NotReady
-            - Ready
-            - Failed
+          allOf:
+            - $ref: '#/components/schemas/ResourcePhase'
           description: |-
             Current cluster phase (native database column).
             Updated when conditions are reported.
@@ -871,11 +876,8 @@ components:
           type: string
           description: Condition type
         status:
-          type: string
-          enum:
-            - 'True'
-            - 'False'
-            - Unknown
+          allOf:
+            - $ref: '#/components/schemas/ConditionStatus'
           description: Condition status
         reason:
           type: string
@@ -899,11 +901,7 @@ components:
         type:
           type: string
         status:
-          type: string
-          enum:
-            - 'True'
-            - 'False'
-            - Unknown
+          $ref: '#/components/schemas/ConditionStatus'
         reason:
           type: string
         message:
@@ -911,6 +909,13 @@ components:
       description: |-
         Condition data for create/update requests (from adapters)
         observed_generation and observed_time are now at AdapterStatusCreateRequest level
+    ConditionStatus:
+      type: string
+      enum:
+        - 'True'
+        - 'False'
+        - Unknown
+      description: Status value for conditions
     DNSSpec:
       type: object
       properties:
@@ -933,6 +938,18 @@ components:
           type: string
         operation_id:
           type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Field path that failed validation
+              error:
+                type: string
+                description: Validation error message for this field
+          description: Field-level validation errors (optional)
     GCPClusterSpec:
       type: object
       required:
@@ -1295,11 +1312,8 @@ components:
         - conditions
       properties:
         phase:
-          type: string
-          enum:
-            - NotReady
-            - Ready
-            - Failed
+          allOf:
+            - $ref: '#/components/schemas/ResourcePhase'
           description: |-
             Current NodePool phase (native database column).
             Updated when conditions are reported.
@@ -1397,6 +1411,13 @@ components:
         Condition in Cluster/NodePool status
         Used for semantic condition types: "ValidationSuccessful", "DNSSuccessful", "NodePoolSuccessful", etc.
         Includes observed_generation and last_updated_time to track adapter-specific state
+    ResourcePhase:
+      type: string
+      enum:
+        - NotReady
+        - Ready
+        - Failed
+      description: Phase of a resource (Cluster or NodePool)
     TaintSpec:
       type: object
       required:
@@ -1416,7 +1437,7 @@ components:
   securitySchemes:
     BearerAuth:
       type: http
-      scheme: Bearer
+      scheme: bearer
 servers:
   - url: http://localhost:8000
     description: Development

@@ -34,14 +34,14 @@ const exampleCluster: Cluster = #{
   updated_time: "2021-01-01T00:00:00Z",
   generation: 1,
   status: #{
-    phase: "Ready",
+    phase: ResourcePhase.Ready,
     last_transition_time: "2021-01-01T00:00:00Z",
     observed_generation: 1,
     last_updated_time: "2021-01-01T00:00:00Z",
     conditions: #[
       #{
         type: "ValidationSuccessful",
-        status: "True",
+        status: ConditionStatus.True,
         reason: "All validations passed",
         message: "All 30 validation tests passed",
         observed_generation: 1,
@@ -51,7 +51,7 @@ const exampleCluster: Cluster = #{
       },
       #{
         type: "DNSSuccessful",
-        status: "True",
+        status: ConditionStatus.True,
         reason: "DNS configured",
         message: "DNS records created for custom.domain.com",
         observed_generation: 1,

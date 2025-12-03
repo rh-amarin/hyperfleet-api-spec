@@ -27,7 +27,7 @@ model NodePoolStatus {
    * Updated when conditions are reported.
    * Note: status.phase provides aggregated view from all conditions.
    */
-  phase: "NotReady" | "Ready" | "Failed";
+  phase: ResourcePhase;
 
   /**
    * Last generation processed

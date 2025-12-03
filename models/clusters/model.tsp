@@ -34,7 +34,7 @@ model ClusterStatus {
    * Updated when conditions are reported.
    * Note: status.phase provides aggregated view from all conditions.
    */
-  phase: "NotReady" | "Ready" | "Failed";
+  phase: ResourcePhase;
 
   /**
    * When cluster last transitioned (used by Sentinel for backoff)

@@ -2,6 +2,15 @@ import "../common/model.tsp";
 import "./example_adapter_status.tsp";
 
 /**
+ * Status value for conditions
+ */
+enum ConditionStatus {
+    True: "True",
+    False: "False",
+    Unknown,
+}
+
+/**
  * Base condition fields shared by all condition types
  */
 model ConditionBase {
@@ -13,7 +22,7 @@ model ConditionBase {
   /**
    * Condition status
    */
-  status: "True" | "False" | "Unknown";
+  status: ConditionStatus;
 
   /**
    * Machine-readable reason code
@@ -72,7 +81,7 @@ model ResourceCondition extends ConditionBase {
  */
 model ConditionRequest {
   type: string;
-  status: "True" | "False" | "Unknown";
+  status: ConditionStatus;
   reason?: string;
   message?: string;
 }
@@ -153,6 +162,5 @@ model AdapterStatusCreateRequest extends AdapterStatusBase {
  */
 @example(exampleAdapterStatusList)
 model AdapterStatusList extends List {
-  kind: "AdapterStatusList";
   items: AdapterStatus[];
 }

@@ -10,6 +10,15 @@ alias KindClusterStatus = "ClusterStatus";
 alias KindNodePoolStatus = "NodePoolStatus";
 alias KindNodePool = "NodePool";
 
+/**
+ * Phase of a resource (Cluster or NodePool)
+ */
+enum ResourcePhase {
+    NotReady,
+    Ready,
+    Failed,
+}
+
 model ID {
     /** Resource identifier */
     id?: Identifier;
@@ -47,6 +56,14 @@ model Error {
     code?: string;
     reason?: string;
     operation_id?: string;
+
+    /** Field-level validation errors (optional) */
+    details?: {
+        /** Field path that failed validation */
+        field?: string;
+        /** Validation error message for this field */
+        error?: string;
+    }[];
 }
 
 model ErrorResponse<Kind, ErrorCode> {
@@ -94,7 +111,7 @@ model QueryParams extends SearchParams {
     orderBy?: string = "created_time";
 
     @query
-    order?: OrderDirection = OrderDirection.desc;
+    order?: OrderDirection;
 }
 
 model List {

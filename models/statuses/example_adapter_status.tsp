@@ -7,21 +7,21 @@ const exampleAdapterStatus: AdapterStatus = (#{
   conditions: #[
     #{
       type: "Available",
-      status: "True",
+      status: ConditionStatus.True,
       reason: "All validations passed",
       message: "All 30 validation tests passed",
       last_transition_time: "2021-01-01T10:00:00Z",
     },
     #{
       type: "Applied",
-      status: "True",
+      status: ConditionStatus.True,
       reason: "Validation job applied",
       message: "Validation job applied successfully",
       last_transition_time: "2021-01-01T10:00:00Z",
     },
     #{
       type: "Health",
-      status: "True",
+      status: ConditionStatus.True,
       reason: "All adapter operations completed successfully",
       message: "All adapter runtime operations completed successfully",
       last_transition_time: "2021-01-01T10:00:00Z",
@@ -54,19 +54,19 @@ const exampleAdapterStatusCreateRequest: AdapterStatusCreateRequest = (#{
   conditions: #[
     #{
       type: "Available",
-      status: "True",
+      status: ConditionStatus.True,
       reason: "All validations passed",
       message: "All 30 validation tests passed",
     },
     #{
       type: "Applied",
-      status: "True",
+      status: ConditionStatus.True,
       reason: "Validation job applied",
       message: "Validation job applied successfully",
     },
     #{
       type: "Health",
-      status: "True",
+      status: ConditionStatus.True,
       reason: "All adapter operations completed successfully",
       message: "All adapter runtime operations completed successfully",
     }
@@ -101,7 +101,7 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
       conditions: #[
         #{
           type: "Available",
-          status: "True",
+          status: ConditionStatus.True,
           reason: "All validations passed",
           message: "All 30 validation tests passed",
           last_transition_time: "2021-01-01T10:00:00Z",
@@ -120,7 +120,7 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
       conditions: #[
         #{
           type: "Available",
-          status: "True",
+          status: ConditionStatus.True,
           reason: "DNS configured",
           message: "DNS records created",
           last_transition_time: "2021-01-01T10:01:00Z",

@@ -23,3 +23,9 @@ using OpenAPI;
 @route("/api/hyperfleet/v1")
 namespace HyperFleet;
 
+// Override BearerAuth to use lowercase "bearer" as required by kin-openapi
+model BearerAuth {
+  type: AuthType.http;
+  scheme: "bearer";
+}
+
