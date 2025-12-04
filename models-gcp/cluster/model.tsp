@@ -1,17 +1,17 @@
-model GCPClusterSpec {
+model ClusterSpec {
     infraID?: string;
-    platform: PlatformSpec;
+    platform: ClusterPlatformSpec;
     release?: ReleaseSpec;
     networking?: NetworkingSpec;
     dns?: DNSSpec;
 }
 
-model PlatformSpec {
+model ClusterPlatformSpec {
     type: "gcp";
-    gcp: GCPPlatformSpec;
+    gcp: ClusterPlatform;
 }
 
-model GCPPlatformSpec {
+model ClusterPlatform {
     projectID?: string;
     region?: string;
     zone?: string;

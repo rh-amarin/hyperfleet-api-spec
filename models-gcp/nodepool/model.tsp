@@ -1,4 +1,4 @@
-model NodePoolSpecGCP {
+model NodePoolSpec {
     platform: NodePoolPlatformSpec;
     @minValue(0) nodeCount?: integer;
     autoscaling?: AutoscalingSpec;
@@ -6,10 +6,10 @@ model NodePoolSpecGCP {
 
 model NodePoolPlatformSpec {
     type: "gcp";
-    gcp: GCPNodePoolSpec;
+    gcp: NodePoolPlatform;
 }
 
-model GCPNodePoolSpec {
+model NodePoolPlatform {
     machineType?: string;
     @minValue(10) diskSize?: integer;
     diskType?: "pd-standard" | "pd-ssd" | "pd-balanced";

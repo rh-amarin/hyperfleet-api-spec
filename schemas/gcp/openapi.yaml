@@ -761,7 +761,7 @@ components:
           description: Cluster name (unique)
         spec:
           allOf:
-            - $ref: '#/components/schemas/GCPClusterSpec'
+            - $ref: '#/components/schemas/ClusterSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -816,6 +816,46 @@ components:
           type: string
         hostPrefix:
           type: integer
+    ClusterPlatform:
+      type: object
+      properties:
+        projectID:
+          type: string
+        region:
+          type: string
+        zone:
+          type: string
+        network:
+          type: string
+        subnet:
+          type: string
+    ClusterPlatformSpec:
+      type: object
+      required:
+        - type
+        - gcp
+      properties:
+        type:
+          type: string
+          enum:
+            - gcp
+        gcp:
+          $ref: '#/components/schemas/ClusterPlatform'
+    ClusterSpec:
+      type: object
+      required:
+        - platform
+      properties:
+        infraID:
+          type: string
+        platform:
+          $ref: '#/components/schemas/ClusterPlatformSpec'
+        release:
+          $ref: '#/components/schemas/ReleaseSpec'
+        networking:
+          $ref: '#/components/schemas/NetworkingSpec'
+        dns:
+          $ref: '#/components/schemas/DNSSpec'
     ClusterStatus:
       type: object
       required:
@@ -950,66 +990,6 @@ components:
                 type: string
                 description: Validation error message for this field
           description: Field-level validation errors (optional)
-    GCPClusterSpec:
-      type: object
-      required:
-        - platform
-      properties:
-        infraID:
-          type: string
-        platform:
-          $ref: '#/components/schemas/PlatformSpec'
-        release:
-          $ref: '#/components/schemas/ReleaseSpec'
-        networking:
-          $ref: '#/components/schemas/NetworkingSpec'
-        dns:
-          $ref: '#/components/schemas/DNSSpec'
-    GCPNodePoolSpec:
-      type: object
-      properties:
-        machineType:
-          type: string
-        diskSize:
-          type: integer
-          minimum: 10
-        diskType:
-          type: string
-          enum:
-            - pd-standard
-            - pd-ssd
-            - pd-balanced
-        zones:
-          type: array
-          items:
-            type: string
-        preemptible:
-          type: boolean
-        accelerators:
-          type: array
-          items:
-            $ref: '#/components/schemas/AcceleratorSpec'
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-        taints:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaintSpec'
-    GCPPlatformSpec:
-      type: object
-      properties:
-        projectID:
-          type: string
-        region:
-          type: string
-        zone:
-          type: string
-        network:
-          type: string
-        subnet:
-          type: string
     List:
       type: object
       required:
@@ -1155,7 +1135,7 @@ components:
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
-            - $ref: '#/components/schemas/NodePoolSpecGCP'
+            - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1185,7 +1165,7 @@ components:
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
-            - $ref: '#/components/schemas/NodePoolSpecGCP'
+            - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1262,7 +1242,7 @@ components:
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
-            - $ref: '#/components/schemas/NodePoolSpecGCP'
+            - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1278,6 +1258,38 @@ components:
             $ref: '#/components/schemas/NodePool'
       allOf:
         - $ref: '#/components/schemas/List'
+    NodePoolPlatform:
+      type: object
+      properties:
+        machineType:
+          type: string
+        diskSize:
+          type: integer
+          minimum: 10
+        diskType:
+          type: string
+          enum:
+            - pd-standard
+            - pd-ssd
+            - pd-balanced
+        zones:
+          type: array
+          items:
+            type: string
+        preemptible:
+          type: boolean
+        accelerators:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcceleratorSpec'
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+        taints:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaintSpec'
     NodePoolPlatformSpec:
       type: object
       required:
@@ -1289,8 +1301,8 @@ components:
           enum:
             - gcp
         gcp:
-          $ref: '#/components/schemas/GCPNodePoolSpec'
-    NodePoolSpecGCP:
+          $ref: '#/components/schemas/NodePoolPlatform'
+    NodePoolSpec:
       type: object
       required:
         - platform
@@ -1364,18 +1376,6 @@ components:
       enum:
         - asc
         - desc
-    PlatformSpec:
-      type: object
-      required:
-        - type
-        - gcp
-      properties:
-        type:
-          type: string
-          enum:
-            - gcp
-        gcp:
-          $ref: '#/components/schemas/GCPPlatformSpec'
     ReleaseSpec:
       type: object
       properties:

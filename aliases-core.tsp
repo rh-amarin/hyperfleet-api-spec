@@ -4,5 +4,3 @@ import "./models-core/cluster/example_post.tsp";
 import "./models-core/nodepool/model.tsp";
 import "./models-core/nodepool/example_nodepool.tsp";
 import "./models-core/nodepool/example_post.tsp";
-alias ClusterSpec = ClusterSpecCore;
-alias NodePoolSpec = NodePoolSpecCore;

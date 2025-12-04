@@ -708,7 +708,7 @@ components:
           description: Cluster name (unique)
         spec:
           allOf:
-            - $ref: '#/components/schemas/ClusterSpecCore'
+            - $ref: '#/components/schemas/ClusterSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -737,7 +737,7 @@ components:
             $ref: '#/components/schemas/Cluster'
       allOf:
         - $ref: '#/components/schemas/List'
-    ClusterSpecCore:
+    ClusterSpec:
       type: object
       description: |-
         Core cluster specification.
@@ -987,7 +987,7 @@ components:
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
-            - $ref: '#/components/schemas/NodePoolSpecCore'
+            - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1017,7 +1017,7 @@ components:
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
-            - $ref: '#/components/schemas/NodePoolSpecCore'
+            - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1075,7 +1075,7 @@ components:
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
-            - $ref: '#/components/schemas/NodePoolSpecCore'
+            - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
             Cluster specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
@@ -1091,7 +1091,7 @@ components:
             $ref: '#/components/schemas/NodePool'
       allOf:
         - $ref: '#/components/schemas/List'
-    NodePoolSpecCore:
+    NodePoolSpec:
       type: object
       description: |-
         Core nodepool specification.
