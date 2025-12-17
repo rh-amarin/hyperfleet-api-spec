@@ -8,6 +8,7 @@ const exampleNodePool: NodePool = #{
   name: "worker-pool-1",
   labels: #{ environment: "production", pooltype: "worker" },
   spec: #{},
+  generation: 1,
   created_time: "2021-01-01T00:00:00Z",
   updated_time: "2021-01-01T00:00:00Z",
   created_by: "user-123@example.com",

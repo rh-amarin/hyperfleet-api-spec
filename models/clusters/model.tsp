@@ -8,9 +8,9 @@ model ClusterBase extends APIResource {
   /**
    * Cluster name (unique)
    */
-  @minLength(1)
+  @minLength(3)
   @maxLength(63)
-  @pattern("^[a-z0-9-]+$")
+  @pattern("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
   name: string;
 
   /** Cluster specification
@@ -61,8 +61,9 @@ model ClusterStatus {
 }
 
 @example(exampleCluster)
-model Cluster extends ClusterBase   {
-...APICreatedResource;
+model Cluster extends ClusterBase {
+  ...APICreatedResource;
+
   /**
    * Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
    */
@@ -70,7 +71,6 @@ model Cluster extends ClusterBase   {
   generation: int32;
 
   status: ClusterStatus;
-
 }
 
 @example(exampleClusterCreateRequest)

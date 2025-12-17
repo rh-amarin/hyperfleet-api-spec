@@ -16,7 +16,7 @@ info:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
   title: HyperFleet API
-  version: 1.0.0
+  version: 1.0.1
 host: hyperfleet.redhat.com
 basePath: /
 schemes:
@@ -51,7 +51,12 @@ paths:
           name: order
           required: false
           type: string
-        - in: query
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
           name: search
           required: false
           type: string
@@ -66,6 +71,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       operationId: getClusters
       summary: List clusters
     post:
@@ -92,6 +99,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       description: >-
         Create a new cluster resource.
 
@@ -110,7 +119,12 @@ paths:
       produces:
         - application/json
       parameters:
-        - in: query
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
           name: search
           required: false
           type: string
@@ -129,6 +143,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       operationId: getClusterById
       summary: Get cluster by ID
   '/api/hyperfleet/v1/clusters/{cluster_id}/nodepools':
@@ -165,7 +181,12 @@ paths:
           name: order
           required: false
           type: string
-        - in: query
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
           name: search
           required: false
           type: string
@@ -180,6 +201,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       description: Returns the list of all nodepools for a cluster
       operationId: getNodePoolsByClusterId
       summary: List all nodepools for cluster
@@ -212,6 +235,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       description: Create a NodePool for a cluster
       operationId: createNodePool
       summary: Create nodepool
@@ -241,6 +266,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       description: Returns specific nodepool
       operationId: getNodePoolById
       summary: Get nodepool by ID
@@ -282,7 +309,12 @@ paths:
           name: order
           required: false
           type: string
-        - in: query
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
           name: search
           required: false
           type: string
@@ -334,7 +366,12 @@ paths:
           name: order
           required: false
           type: string
-        - in: query
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
           name: search
           required: false
           type: string
@@ -347,6 +384,8 @@ paths:
           description: The server could not understand the request due to invalid syntax.
         '404':
           description: The server cannot find the requested resource.
+      security:
+        - BearerAuth: []
       description: Returns adapter status reports for this cluster
       operationId: getClusterStatuses
       summary: List all adapter statuses for cluster
@@ -379,7 +418,12 @@ paths:
           name: order
           required: false
           type: string
-        - in: query
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
           name: search
           required: false
           type: string
@@ -394,6 +438,8 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
       description: Returns the list of all nodepools
       operationId: getNodePools
       summary: List all nodepools for cluster
@@ -760,8 +806,8 @@ definitions:
       name:
         description: Cluster name (unique)
         maxLength: 63
-        minLength: 1
-        pattern: '^[a-z0-9-]+$'
+        minLength: 3
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
         type: string
       spec:
         allOf:
@@ -1057,6 +1103,7 @@ definitions:
     example:
       created_by: user-123@example.com
       created_time: '2021-01-01T00:00:00Z'
+      generation: 1
       href: 'https://api.hyperfleet.com/v1/nodepools/nodepool-123'
       id: nodepool-123
       kind: NodePool
@@ -1119,6 +1166,13 @@ definitions:
       created_time:
         format: date-time
         type: string
+      generation:
+        description: >-
+          Generation field is updated on customer updates, reflecting the
+          version of the "intent" of the customer
+        format: int32
+        minimum: 1
+        type: integer
       owner_references:
         $ref: '#/definitions/ObjectReference'
       status:
@@ -1134,6 +1188,7 @@ definitions:
       - updated_time
       - created_by
       - updated_by
+      - generation
       - owner_references
       - status
     type: object
@@ -1155,12 +1210,15 @@ definitions:
         type: object
       name:
         description: NodePool name (unique in a cluster)
+        maxLength: 63
+        minLength: 3
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
         type: string
       spec:
         allOf:
           - $ref: '#/definitions/NodePoolSpec'
         description: >-
-          Cluster specification
+          NodePool specification
 
           CLM doesn't know how to unmarshall the spec, it only stores and
           forwards to adapters to do their job
@@ -1213,12 +1271,15 @@ definitions:
         type: object
       name:
         description: NodePool name (unique in a cluster)
+        maxLength: 63
+        minLength: 3
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
         type: string
       spec:
         allOf:
           - $ref: '#/definitions/NodePoolSpec'
         description: >-
-          Cluster specification
+          NodePool specification
 
           CLM doesn't know how to unmarshall the spec, it only stores and
           forwards to adapters to do their job
@@ -1236,6 +1297,13 @@ definitions:
       created_time:
         format: date-time
         type: string
+      generation:
+        description: >-
+          Generation field is updated on customer updates, reflecting the
+          version of the "intent" of the customer
+        format: int32
+        minimum: 1
+        type: integer
       href:
         description: Resource URI
         type: string
@@ -1252,6 +1320,9 @@ definitions:
         type: object
       name:
         description: NodePool name (unique in a cluster)
+        maxLength: 63
+        minLength: 3
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
         type: string
       owner_references:
         $ref: '#/definitions/ObjectReference'
@@ -1259,7 +1330,7 @@ definitions:
         allOf:
           - $ref: '#/definitions/NodePoolSpec'
         description: >-
-          Cluster specification
+          NodePool specification
 
           CLM doesn't know how to unmarshall the spec, it only stores and
           forwards to adapters to do their job
@@ -1278,6 +1349,7 @@ definitions:
       - updated_time
       - created_by
       - updated_by
+      - generation
       - owner_references
       - status
       - name
@@ -1486,6 +1558,11 @@ definitions:
       - key
       - effect
     type: object
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 tags: []
 x-components:
   parameters:
@@ -1518,6 +1595,11 @@ x-components:
       required: false
       type: integer
     SearchParams:
+      description: >-
+        Filter results using TSL (Tree Search Language) query syntax.
+
+        Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+        `labels.region='us-east'`
       in: query
       name: search
       required: false

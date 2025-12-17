@@ -11,6 +11,7 @@ using OpenAPI;
 
 namespace HyperFleet;
 @route("/clusters/{cluster_id}/statuses")
+@useAuth(HyperFleet.BearerAuth)
 //@tag("Cluster statuses")
 interface ClusterStatuses{
   /**

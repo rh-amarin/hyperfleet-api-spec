@@ -12,6 +12,7 @@ using OpenAPI;
 namespace HyperFleet;
 //@tag("Clusters")
 @route("/clusters")
+@useAuth(HyperFleet.BearerAuth)
 interface Clusters {
   @get
   @route("")

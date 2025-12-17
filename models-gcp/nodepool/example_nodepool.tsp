@@ -7,6 +7,7 @@ const exampleNodePool: NodePool = #{
   href: "https://api.hyperfleet.com/v1/nodepools/nodepool-123",
   name: "worker-pool-1",
   labels: #{ environment: "production", pooltype: "worker" },
+  generation: 1,
   spec: #{
     platform: #{
       type: "gcp",

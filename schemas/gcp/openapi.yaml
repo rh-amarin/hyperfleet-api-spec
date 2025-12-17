@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: HyperFleet API
-  version: 1.0.0
+  version: 1.0.1
   contact:
     name: HyperFleet Team
   license:
@@ -40,6 +40,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: []
     post:
       operationId: postCluster
       summary: Create cluster
@@ -71,6 +73,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ClusterCreateRequest'
+      security:
+        - BearerAuth: []
   /api/hyperfleet/v1/clusters/{cluster_id}:
     get:
       operationId: getClusterById
@@ -97,6 +101,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: []
   /api/hyperfleet/v1/clusters/{cluster_id}/nodepools:
     get:
       operationId: getNodePoolsByClusterId
@@ -129,6 +135,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: []
     post:
       operationId: createNodePool
       summary: Create nodepool
@@ -161,6 +169,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NodePoolCreateRequest'
+      security:
+        - BearerAuth: []
   /api/hyperfleet/v1/clusters/{cluster_id}/nodepools/{nodepool_id}:
     get:
       operationId: getNodePoolById
@@ -194,6 +204,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: []
   /api/hyperfleet/v1/clusters/{cluster_id}/nodepools/{nodepool_id}/statuses:
     get:
       operationId: getNodePoolsStatuses
@@ -259,6 +271,8 @@ paths:
           description: The server could not understand the request due to invalid syntax.
         '404':
           description: The server cannot find the requested resource.
+      security:
+        - BearerAuth: []
   /api/hyperfleet/v1/nodepools:
     get:
       operationId: getNodePools
@@ -285,6 +299,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: []
 components:
   parameters:
     QueryParams.order:
@@ -324,6 +340,9 @@ components:
       name: search
       in: query
       required: false
+      description: |-
+        Filter results using TSL (Tree Search Language) query syntax.
+        Examples: `status.phase='NotReady'`, `name in ('c1','c2')`, `labels.region='us-east'`
       schema:
         type: string
       explode: false
@@ -682,9 +701,9 @@ components:
           default: Cluster
         name:
           type: string
-          minLength: 1
+          minLength: 3
           maxLength: 63
-          pattern: ^[a-z0-9-]+$
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
           description: Cluster name (unique)
         spec:
           allOf:
@@ -958,6 +977,7 @@ components:
         - updated_time
         - created_by
         - updated_by
+        - generation
         - owner_references
         - status
       properties:
@@ -973,6 +993,11 @@ components:
         updated_by:
           type: string
           format: email
+        generation:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
         owner_references:
           $ref: '#/components/schemas/ObjectReference'
         status:
@@ -987,6 +1012,7 @@ components:
         labels:
           environment: production
           pooltype: worker
+        generation: 1
         spec:
           platform:
             type: gcp
@@ -1059,12 +1085,15 @@ components:
           description: Resource URI
         name:
           type: string
+          minLength: 3
+          maxLength: 63
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
             - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
-            Cluster specification
+            NodePool specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
             But CLM will validate the schema before accepting the request
     NodePoolCreateRequest:
@@ -1089,12 +1118,15 @@ components:
           description: Resource URI
         name:
           type: string
+          minLength: 3
+          maxLength: 63
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
             - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
-            Cluster specification
+            NodePool specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
             But CLM will validate the schema before accepting the request
       example:
@@ -1129,6 +1161,7 @@ components:
         - updated_time
         - created_by
         - updated_by
+        - generation
         - owner_references
         - status
         - name
@@ -1146,6 +1179,11 @@ components:
         updated_by:
           type: string
           format: email
+        generation:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
         owner_references:
           $ref: '#/components/schemas/ObjectReference'
         status:
@@ -1166,12 +1204,15 @@ components:
           description: Resource URI
         name:
           type: string
+          minLength: 3
+          maxLength: 63
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
           description: NodePool name (unique in a cluster)
         spec:
           allOf:
             - $ref: '#/components/schemas/NodePoolSpec'
           description: |-
-            Cluster specification
+            NodePool specification
             CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
             But CLM will validate the schema before accepting the request
     NodePoolList:
@@ -1361,6 +1402,10 @@ components:
             - NoSchedule
             - PreferNoSchedule
             - NoExecute
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
 servers:
   - url: https://hyperfleet.redhat.com
     description: Production

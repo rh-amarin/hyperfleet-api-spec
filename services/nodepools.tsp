@@ -11,6 +11,7 @@ using OpenAPI;
 namespace HyperFleet;
 
 //@tag("NodePools")
+@useAuth(HyperFleet.BearerAuth)
 interface NodePools {
     /**
      * Returns the list of all nodepools

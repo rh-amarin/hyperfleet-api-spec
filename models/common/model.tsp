@@ -96,6 +96,8 @@ enum OrderDirection {
 }
 
 model SearchParams {
+    /** Filter results using TSL (Tree Search Language) query syntax.
+     * Examples: `status.phase='NotReady'`, `name in ('c1','c2')`, `labels.region='us-east'` */
     @query
     search?: string;
 }
