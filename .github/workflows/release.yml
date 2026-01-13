@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install tsp
+        run: npm install -g @typespec/compiler@1.6
+
       - name: Build Core schema
         run: ./build-schema.sh core
 
