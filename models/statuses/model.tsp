@@ -19,9 +19,6 @@ model ConditionBase {
    */
   type: string;
 
-  /**
-   * Condition status
-   */
   status: ConditionStatus;
 
   /**
@@ -47,7 +44,8 @@ model ConditionBase {
  * Note: observed_generation is at AdapterStatus level, not per-condition,
  * since all conditions in one AdapterStatus share the same observed generation
  */
-model AdapterCondition extends ConditionBase {
+model AdapterCondition {
+  ...ConditionBase;
   // No additional fields - inherits all fields from ConditionBase
 }
 
@@ -56,7 +54,8 @@ model AdapterCondition extends ConditionBase {
  * Used for semantic condition types: "ValidationSuccessful", "DNSSuccessful", "NodePoolSuccessful", etc.
  * Includes observed_generation and last_updated_time to track adapter-specific state
  */
-model ResourceCondition extends ConditionBase {
+model ResourceCondition {
+  ...ConditionBase;
   /**
    * Generation of the spec that this condition reflects
    */
@@ -123,7 +122,8 @@ model AdapterStatusBase {
  * Contains multiple conditions, job metadata, and adapter-specific data
  */
 @example(exampleAdapterStatus)
-model AdapterStatus extends AdapterStatusBase {
+model AdapterStatus {
+  ...AdapterStatusBase;
   /**
    * Kubernetes-style conditions tracking adapter state
    * Typically includes: Available, Applied, Health
@@ -147,7 +147,8 @@ model AdapterStatus extends AdapterStatusBase {
  * Request payload for creating/updating adapter status
  */
 @example(exampleAdapterStatusCreateRequest)
-model AdapterStatusCreateRequest extends AdapterStatusBase {
+model AdapterStatusCreateRequest {
+  ...AdapterStatusBase;
   /**
    * When the adapter observed this resource state
    * API will use this to set AdapterStatus.last_report_time
@@ -161,6 +162,6 @@ model AdapterStatusCreateRequest extends AdapterStatusBase {
  * List of adapter statuses with pagination metadata
  */
 @example(exampleAdapterStatusList)
-model AdapterStatusList extends List {
-  items: AdapterStatus[];
+model AdapterStatusList {
+  ...List<AdapterStatus>;
 }

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: HyperFleet API
-  version: 1.0.1
+  version: 1.0.2
   contact:
     name: HyperFleet Team
   license:
@@ -20,11 +20,11 @@ paths:
       operationId: getClusters
       summary: List clusters
       parameters:
+        - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
-        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -115,11 +115,11 @@ paths:
           description: Cluster ID
           schema:
             type: string
+        - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
-        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -223,11 +223,11 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
-        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -255,11 +255,11 @@ paths:
           description: Cluster ID
           schema:
             type: string
+        - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
-        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -279,11 +279,11 @@ paths:
       summary: List all nodepools for cluster
       description: Returns the list of all nodepools
       parameters:
+        - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
         - $ref: '#/components/parameters/QueryParams.pageSize'
         - $ref: '#/components/parameters/QueryParams.orderBy'
         - $ref: '#/components/parameters/QueryParams.order'
-        - $ref: '#/components/parameters/SearchParams'
       responses:
         '200':
           description: The request has succeeded.
@@ -347,16 +347,6 @@ components:
         type: string
       explode: false
   schemas:
-    APIResource:
-      type: object
-      properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-      allOf:
-        - $ref: '#/components/schemas/ObjectReference'
     AcceleratorSpec:
       type: object
       required:
@@ -370,8 +360,28 @@ components:
           minimum: 1
     AdapterCondition:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/ConditionBase'
+      required:
+        - type
+        - status
+        - last_transition_time
+      properties:
+        type:
+          type: string
+          description: Condition type
+        status:
+          $ref: '#/components/schemas/ConditionStatus'
+        reason:
+          type: string
+          description: Machine-readable reason code
+        message:
+          type: string
+          description: Human-readable message
+        last_transition_time:
+          type: string
+          format: date-time
+          description: |-
+            When this condition last transitioned status (API-managed)
+            Only updated when status changes (True/False/Unknown), not when reason/message changes
       description: |-
         Condition in AdapterStatus
         Used for standard Kubernetes condition types: "Available", "Applied", "Health"
@@ -380,10 +390,42 @@ components:
     AdapterStatus:
       type: object
       required:
+        - adapter
+        - observed_generation
         - conditions
         - created_time
         - last_report_time
       properties:
+        adapter:
+          type: string
+          description: Adapter name (e.g., "validator", "dns", "provisioner")
+        observed_generation:
+          type: integer
+          format: int32
+          description: Which generation of the resource this status reflects
+        metadata:
+          type: object
+          properties:
+            job_name:
+              type: string
+            job_namespace:
+              type: string
+            attempt:
+              type: integer
+              format: int32
+            started_time:
+              type: string
+              format: date-time
+            completed_time:
+              type: string
+              format: date-time
+            duration:
+              type: string
+          description: Job execution metadata
+        data:
+          type: object
+          additionalProperties: {}
+          description: Adapter-specific data (structure varies by adapter type)
         conditions:
           type: array
           items:
@@ -402,8 +444,6 @@ components:
             When this adapter last reported its status (API-managed)
             Updated every time the adapter POSTs, even if conditions haven't changed
             Used by Sentinel to detect adapter liveness
-      allOf:
-        - $ref: '#/components/schemas/AdapterStatusBase'
       description: |-
         AdapterStatus represents the complete status report from an adapter
         Contains multiple conditions, job metadata, and adapter-specific data
@@ -440,102 +480,30 @@ components:
             failed: 0
         created_time: '2021-01-01T10:00:00Z'
         last_report_time: '2021-01-01T10:02:00Z'
-    AdapterStatusBase:
-      type: object
-      required:
-        - adapter
-        - observed_generation
-      properties:
-        adapter:
-          type: string
-          description: Adapter name (e.g., "validator", "dns", "provisioner")
-        observed_generation:
-          type: integer
-          format: int32
-          description: Which generation of the resource this status reflects
-        metadata:
-          type: object
-          properties:
-            job_name:
-              type: string
-            job_namespace:
-              type: string
-            attempt:
-              type: integer
-              format: int32
-            started_time:
-              type: string
-              format: date-time
-            completed_time:
-              type: string
-              format: date-time
-            duration:
-              type: string
-          description: Job execution metadata
-        data:
-          type: object
-          additionalProperties: {}
-          description: Adapter-specific data (structure varies by adapter type)
-      description: Base fields shared by AdapterStatus and AdapterStatusCreateRequest
-    AdapterStatusCreateRequest:
-      type: object
-      required:
-        - observed_time
-        - conditions
-      properties:
-        observed_time:
-          type: string
-          format: date-time
-          description: |-
-            When the adapter observed this resource state
-            API will use this to set AdapterStatus.last_report_time
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConditionRequest'
-      allOf:
-        - $ref: '#/components/schemas/AdapterStatusBase'
-      description: Request payload for creating/updating adapter status
-      example:
-        adapter: validator
-        observed_generation: 1
-        observed_time: '2021-01-01T10:00:00Z'
-        conditions:
-          - type: Available
-            status: 'True'
-            reason: All validations passed
-            message: All 30 validation tests passed
-          - type: Applied
-            status: 'True'
-            reason: Validation job applied
-            message: Validation job applied successfully
-          - type: Health
-            status: 'True'
-            reason: All adapter operations completed successfully
-            message: All adapter runtime operations completed successfully
-        metadata:
-          job_name: validator-job-abc123
-          job_namespace: hyperfleet-system
-          attempt: 1
-          started_time: '2021-01-01T10:00:00Z'
-          completed_time: '2021-01-01T10:02:00Z'
-          duration: 2m
-        data:
-          validation_results:
-            total_tests: 30
-            passed: 30
-            failed: 0
     AdapterStatusList:
       type: object
       required:
+        - kind
+        - page
+        - size
+        - total
         - items
       properties:
+        kind:
+          type: string
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
         items:
           type: array
           items:
             $ref: '#/components/schemas/AdapterStatus'
-      allOf:
-        - $ref: '#/components/schemas/List'
       description: List of adapter statuses with pagination metadata
       example:
         kind: AdapterStatusList
@@ -606,6 +574,8 @@ components:
     Cluster:
       type: object
       required:
+        - name
+        - spec
         - created_time
         - updated_time
         - created_by
@@ -613,6 +583,28 @@ components:
         - generation
         - status
       properties:
+        id:
+          type: string
+          description: Resource identifier
+        kind:
+          type: string
+          description: Resource kind
+        href:
+          type: string
+          description: Resource URI
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
+        name:
+          type: string
+          minLength: 3
+          maxLength: 63
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          description: Cluster name (unique)
+        spec:
+          $ref: '#/components/schemas/ClusterSpec'
         created_time:
           type: string
           format: date-time
@@ -632,8 +624,6 @@ components:
           description: Generation field is updated on customer updates, reflecting the version of the "intent" of the customer
         status:
           $ref: '#/components/schemas/ClusterStatus'
-      allOf:
-        - $ref: '#/components/schemas/ClusterBase'
       example:
         kind: Cluster
         id: cluster-123
@@ -689,16 +679,26 @@ components:
               last_transition_time: '2021-01-01T10:01:00Z'
         created_by: user-123@example.com
         updated_by: user-123@example.com
-    ClusterBase:
+    ClusterCreateRequest:
       type: object
       required:
-        - kind
         - name
         - spec
       properties:
+        id:
+          type: string
+          description: Resource identifier
         kind:
           type: string
-          default: Cluster
+          description: Resource kind
+        href:
+          type: string
+          description: Resource URI
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
         name:
           type: string
           minLength: 3
@@ -706,18 +706,7 @@ components:
           pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
           description: Cluster name (unique)
         spec:
-          allOf:
-            - $ref: '#/components/schemas/ClusterSpec'
-          description: |-
-            Cluster specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
-      allOf:
-        - $ref: '#/components/schemas/APIResource'
-    ClusterCreateRequest:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/ClusterBase'
+          $ref: '#/components/schemas/ClusterSpec'
       example:
         kind: Cluster
         name: cluster-123
@@ -747,14 +736,27 @@ components:
     ClusterList:
       type: object
       required:
+        - kind
+        - page
+        - size
+        - total
         - items
       properties:
+        kind:
+          type: string
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
         items:
           type: array
           items:
             $ref: '#/components/schemas/Cluster'
-      allOf:
-        - $ref: '#/components/schemas/List'
     ClusterNetworkEntry:
       type: object
       properties:
@@ -812,12 +814,7 @@ components:
         - conditions
       properties:
         phase:
-          allOf:
-            - $ref: '#/components/schemas/ResourcePhase'
-          description: |-
-            Current cluster phase (native database column).
-            Updated when conditions are reported.
-            Note: status.phase provides aggregated view from all conditions.
+          $ref: '#/components/schemas/ResourcePhase'
         last_transition_time:
           type: string
           format: date-time
@@ -851,50 +848,6 @@ components:
         It is aggregated from condition updates posted to `/clusters/{id}/statuses`.
 
         Provides quick overview of all reported conditions and aggregated phase.
-    ConditionBase:
-      type: object
-      required:
-        - type
-        - status
-        - last_transition_time
-      properties:
-        type:
-          type: string
-          description: Condition type
-        status:
-          allOf:
-            - $ref: '#/components/schemas/ConditionStatus'
-          description: Condition status
-        reason:
-          type: string
-          description: Machine-readable reason code
-        message:
-          type: string
-          description: Human-readable message
-        last_transition_time:
-          type: string
-          format: date-time
-          description: |-
-            When this condition last transitioned status (API-managed)
-            Only updated when status changes (True/False/Unknown), not when reason/message changes
-      description: Base condition fields shared by all condition types
-    ConditionRequest:
-      type: object
-      required:
-        - type
-        - status
-      properties:
-        type:
-          type: string
-        status:
-          $ref: '#/components/schemas/ConditionStatus'
-        reason:
-          type: string
-        message:
-          type: string
-      description: |-
-        Condition data for create/update requests (from adapters)
-        observed_generation and observed_time are now at AdapterStatusCreateRequest level
     ConditionStatus:
       type: string
       enum:
@@ -936,29 +889,6 @@ components:
                 type: string
                 description: Validation error message for this field
           description: Field-level validation errors (optional)
-    List:
-      type: object
-      required:
-        - kind
-        - page
-        - size
-        - total
-        - items
-      properties:
-        kind:
-          type: string
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        total:
-          type: integer
-          format: int32
-        items:
-          type: array
-          items: {}
     NetworkingSpec:
       type: object
       properties:
@@ -973,6 +903,8 @@ components:
     NodePool:
       type: object
       required:
+        - name
+        - spec
         - created_time
         - updated_time
         - created_by
@@ -981,6 +913,28 @@ components:
         - owner_references
         - status
       properties:
+        id:
+          type: string
+          description: Resource identifier
+        kind:
+          type: string
+          description: Resource kind
+        href:
+          type: string
+          description: Resource URI
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
+        name:
+          type: string
+          minLength: 3
+          maxLength: 63
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          description: NodePool name (unique in a cluster)
+        spec:
+          $ref: '#/components/schemas/NodePoolSpec'
         created_time:
           type: string
           format: date-time
@@ -1002,8 +956,6 @@ components:
           $ref: '#/components/schemas/ObjectReference'
         status:
           $ref: '#/components/schemas/NodePoolStatus'
-      allOf:
-        - $ref: '#/components/schemas/NodePoolBase'
       example:
         kind: NodePool
         id: nodepool-123
@@ -1063,50 +1015,12 @@ components:
               created_time: '2021-01-01T10:01:00Z'
               last_updated_time: '2021-01-01T10:01:00Z'
               last_transition_time: '2021-01-01T10:01:00Z'
-    NodePoolBase:
-      type: object
-      required:
-        - name
-        - spec
-      properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-        id:
-          type: string
-          description: Resource identifier
-        kind:
-          type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          minLength: 3
-          maxLength: 63
-          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
-          description: NodePool name (unique in a cluster)
-        spec:
-          allOf:
-            - $ref: '#/components/schemas/NodePoolSpec'
-          description: |-
-            NodePool specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
     NodePoolCreateRequest:
       type: object
       required:
         - name
         - spec
       properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
         id:
           type: string
           description: Resource identifier
@@ -1116,6 +1030,11 @@ components:
         href:
           type: string
           description: Resource URI
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
         name:
           type: string
           minLength: 3
@@ -1123,12 +1042,7 @@ components:
           pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
           description: NodePool name (unique in a cluster)
         spec:
-          allOf:
-            - $ref: '#/components/schemas/NodePoolSpec'
-          description: |-
-            NodePool specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
+          $ref: '#/components/schemas/NodePoolSpec'
       example:
         name: worker-pool-1
         labels:
@@ -1157,6 +1071,8 @@ components:
     NodePoolCreateResponse:
       type: object
       required:
+        - name
+        - spec
         - created_time
         - updated_time
         - created_by
@@ -1164,9 +1080,29 @@ components:
         - generation
         - owner_references
         - status
-        - name
-        - spec
       properties:
+        id:
+          type: string
+          description: Resource identifier
+        kind:
+          type: string
+          description: Resource kind
+        href:
+          type: string
+          description: Resource URI
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: labels for the API resource as pairs of name:value strings
+        name:
+          type: string
+          minLength: 3
+          maxLength: 63
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          description: NodePool name (unique in a cluster)
+        spec:
+          $ref: '#/components/schemas/NodePoolSpec'
         created_time:
           type: string
           format: date-time
@@ -1188,44 +1124,30 @@ components:
           $ref: '#/components/schemas/ObjectReference'
         status:
           $ref: '#/components/schemas/NodePoolStatus'
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: labels for the API resource as pairs of name:value strings
-        id:
-          type: string
-          description: Resource identifier
-        kind:
-          type: string
-          description: Resource kind
-        href:
-          type: string
-          description: Resource URI
-        name:
-          type: string
-          minLength: 3
-          maxLength: 63
-          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
-          description: NodePool name (unique in a cluster)
-        spec:
-          allOf:
-            - $ref: '#/components/schemas/NodePoolSpec'
-          description: |-
-            NodePool specification
-            CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-            But CLM will validate the schema before accepting the request
     NodePoolList:
       type: object
       required:
+        - kind
+        - page
+        - size
+        - total
         - items
       properties:
+        kind:
+          type: string
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
         items:
           type: array
           items:
             $ref: '#/components/schemas/NodePool'
-      allOf:
-        - $ref: '#/components/schemas/List'
     NodePoolPlatform:
       type: object
       properties:
@@ -1292,12 +1214,7 @@ components:
         - conditions
       properties:
         phase:
-          allOf:
-            - $ref: '#/components/schemas/ResourcePhase'
-          description: |-
-            Current NodePool phase (native database column).
-            Updated when conditions are reported.
-            Note: status.phase provides aggregated view from all conditions.
+          $ref: '#/components/schemas/ResourcePhase'
         observed_generation:
           type: integer
           format: int32
@@ -1354,10 +1271,30 @@ components:
     ResourceCondition:
       type: object
       required:
+        - type
+        - status
+        - last_transition_time
         - observed_generation
         - created_time
         - last_updated_time
       properties:
+        type:
+          type: string
+          description: Condition type
+        status:
+          $ref: '#/components/schemas/ConditionStatus'
+        reason:
+          type: string
+          description: Machine-readable reason code
+        message:
+          type: string
+          description: Human-readable message
+        last_transition_time:
+          type: string
+          format: date-time
+          description: |-
+            When this condition last transitioned status (API-managed)
+            Only updated when status changes (True/False/Unknown), not when reason/message changes
         observed_generation:
           type: integer
           format: int32
@@ -1373,8 +1310,6 @@ components:
             When the corresponding adapter last reported (API-managed)
             Updated every time the adapter POSTs, even if condition status hasn't changed
             Copied from AdapterStatus.last_report_time
-      allOf:
-        - $ref: '#/components/schemas/ConditionBase'
       description: |-
         Condition in Cluster/NodePool status
         Used for semantic condition types: "ValidationSuccessful", "DNSSuccessful", "NodePoolSuccessful", etc.

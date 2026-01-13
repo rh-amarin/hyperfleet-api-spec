@@ -2,8 +2,8 @@ import "../common/model.tsp";
 import "../statuses/model.tsp";
 import "../../aliases.tsp";
 
-model ClusterBase extends APIResource {
-  kind: string = "Cluster";
+model ClusterBase {
+  ...APIResource;
 
   /**
    * Cluster name (unique)
@@ -13,10 +13,6 @@ model ClusterBase extends APIResource {
   @pattern("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
   name: string;
 
-  /** Cluster specification
-   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-   * But CLM will validate the schema before accepting the request
-   */
   spec: ClusterSpec;
 }
 
@@ -29,11 +25,6 @@ model ClusterBase extends APIResource {
  * Provides quick overview of all reported conditions and aggregated phase.
  */
 model ClusterStatus {
-  /**
-   * Current cluster phase (native database column).
-   * Updated when conditions are reported.
-   * Note: status.phase provides aggregated view from all conditions.
-   */
   phase: ResourcePhase;
 
   /**
@@ -61,7 +52,8 @@ model ClusterStatus {
 }
 
 @example(exampleCluster)
-model Cluster extends ClusterBase {
+model Cluster {
+  ...ClusterBase;
   ...APICreatedResource;
 
   /**
@@ -74,8 +66,10 @@ model Cluster extends ClusterBase {
 }
 
 @example(exampleClusterCreateRequest)
-model ClusterCreateRequest extends ClusterBase {}
+model ClusterCreateRequest  {
+    ...ClusterBase;
+}
 
-model ClusterList extends List {
-  items: Cluster[];
+model ClusterList {
+  ...List<Cluster>;
 }

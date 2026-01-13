@@ -16,7 +16,7 @@ info:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
   title: HyperFleet API
-  version: 1.0.1
+  version: 1.0.2
 host: hyperfleet.redhat.com
 basePath: /
 schemes:
@@ -27,6 +27,15 @@ paths:
       produces:
         - application/json
       parameters:
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
+          name: search
+          required: false
+          type: string
         - default: 1
           format: int32
           in: query
@@ -49,15 +58,6 @@ paths:
             - desc
           in: query
           name: order
-          required: false
-          type: string
-        - description: >-
-            Filter results using TSL (Tree Search Language) query syntax.
-
-            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
-            `labels.region='us-east'`
-          in: query
-          name: search
           required: false
           type: string
       responses:
@@ -157,6 +157,15 @@ paths:
           name: cluster_id
           required: true
           type: string
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
+          name: search
+          required: false
+          type: string
         - default: 1
           format: int32
           in: query
@@ -179,15 +188,6 @@ paths:
             - desc
           in: query
           name: order
-          required: false
-          type: string
-        - description: >-
-            Filter results using TSL (Tree Search Language) query syntax.
-
-            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
-            `labels.region='us-east'`
-          in: query
-          name: search
           required: false
           type: string
       responses:
@@ -285,6 +285,15 @@ paths:
           name: nodepool_id
           required: true
           type: string
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
+          name: search
+          required: false
+          type: string
         - default: 1
           format: int32
           in: query
@@ -307,15 +316,6 @@ paths:
             - desc
           in: query
           name: order
-          required: false
-          type: string
-        - description: >-
-            Filter results using TSL (Tree Search Language) query syntax.
-
-            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
-            `labels.region='us-east'`
-          in: query
-          name: search
           required: false
           type: string
       responses:
@@ -342,6 +342,15 @@ paths:
           name: cluster_id
           required: true
           type: string
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
+          name: search
+          required: false
+          type: string
         - default: 1
           format: int32
           in: query
@@ -364,15 +373,6 @@ paths:
             - desc
           in: query
           name: order
-          required: false
-          type: string
-        - description: >-
-            Filter results using TSL (Tree Search Language) query syntax.
-
-            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
-            `labels.region='us-east'`
-          in: query
-          name: search
           required: false
           type: string
       responses:
@@ -394,6 +394,15 @@ paths:
       produces:
         - application/json
       parameters:
+        - description: >-
+            Filter results using TSL (Tree Search Language) query syntax.
+
+            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
+            `labels.region='us-east'`
+          in: query
+          name: search
+          required: false
+          type: string
         - default: 1
           format: int32
           in: query
@@ -418,15 +427,6 @@ paths:
           name: order
           required: false
           type: string
-        - description: >-
-            Filter results using TSL (Tree Search Language) query syntax.
-
-            Examples: `status.phase='NotReady'`, `name in ('c1','c2')`,
-            `labels.region='us-east'`
-          in: query
-          name: search
-          required: false
-          type: string
       responses:
         '200':
           description: The request has succeeded.
@@ -444,16 +444,6 @@ paths:
       operationId: getNodePools
       summary: List all nodepools for cluster
 definitions:
-  APIResource:
-    allOf:
-      - $ref: '#/definitions/ObjectReference'
-    properties:
-      labels:
-        additionalProperties:
-          type: string
-        description: 'labels for the API resource as pairs of name:value strings'
-        type: object
-    type: object
   AcceleratorSpec:
     properties:
       count:
@@ -466,8 +456,6 @@ definitions:
       - count
     type: object
   AdapterCondition:
-    allOf:
-      - $ref: '#/definitions/ConditionBase'
     description: >-
       Condition in AdapterStatus
 
@@ -478,10 +466,32 @@ definitions:
 
       since all conditions in one AdapterStatus share the same observed
       generation
+    properties:
+      last_transition_time:
+        description: >-
+          When this condition last transitioned status (API-managed)
+
+          Only updated when status changes (True/False/Unknown), not when
+          reason/message changes
+        format: date-time
+        type: string
+      message:
+        description: Human-readable message
+        type: string
+      reason:
+        description: Machine-readable reason code
+        type: string
+      status:
+        $ref: '#/definitions/ConditionStatus'
+      type:
+        description: Condition type
+        type: string
+    required:
+      - type
+      - status
+      - last_transition_time
     type: object
   AdapterStatus:
-    allOf:
-      - $ref: '#/definitions/AdapterStatusBase'
     description: |-
       AdapterStatus represents the complete status report from an adapter
       Contains multiple conditions, job metadata, and adapter-specific data
@@ -519,6 +529,9 @@ definitions:
         started_time: '2021-01-01T10:00:00Z'
       observed_generation: 1
     properties:
+      adapter:
+        description: 'Adapter name (e.g., "validator", "dns", "provisioner")'
+        type: string
       conditions:
         description: |-
           Kubernetes-style conditions tracking adapter state
@@ -530,6 +543,10 @@ definitions:
         description: When this adapter status was first created (API-managed)
         format: date-time
         type: string
+      data:
+        additionalProperties: {}
+        description: Adapter-specific data (structure varies by adapter type)
+        type: object
       last_report_time:
         description: >-
           When this adapter last reported its status (API-managed)
@@ -540,21 +557,6 @@ definitions:
           Used by Sentinel to detect adapter liveness
         format: date-time
         type: string
-    required:
-      - conditions
-      - created_time
-      - last_report_time
-    type: object
-  AdapterStatusBase:
-    description: Base fields shared by AdapterStatus and AdapterStatusCreateRequest
-    properties:
-      adapter:
-        description: 'Adapter name (e.g., "validator", "dns", "provisioner")'
-        type: string
-      data:
-        additionalProperties: {}
-        description: Adapter-specific data (structure varies by adapter type)
-        type: object
       metadata:
         description: Job execution metadata
         properties:
@@ -581,58 +583,11 @@ definitions:
     required:
       - adapter
       - observed_generation
-    type: object
-  AdapterStatusCreateRequest:
-    allOf:
-      - $ref: '#/definitions/AdapterStatusBase'
-    description: Request payload for creating/updating adapter status
-    example:
-      adapter: validator
-      conditions:
-        - message: All 30 validation tests passed
-          reason: All validations passed
-          status: 'True'
-          type: Available
-        - message: Validation job applied successfully
-          reason: Validation job applied
-          status: 'True'
-          type: Applied
-        - message: All adapter runtime operations completed successfully
-          reason: All adapter operations completed successfully
-          status: 'True'
-          type: Health
-      data:
-        validation_results:
-          failed: 0
-          passed: 30
-          total_tests: 30
-      metadata:
-        attempt: 1
-        completed_time: '2021-01-01T10:02:00Z'
-        duration: 2m
-        job_name: validator-job-abc123
-        job_namespace: hyperfleet-system
-        started_time: '2021-01-01T10:00:00Z'
-      observed_generation: 1
-      observed_time: '2021-01-01T10:00:00Z'
-    properties:
-      conditions:
-        items:
-          $ref: '#/definitions/ConditionRequest'
-        type: array
-      observed_time:
-        description: |-
-          When the adapter observed this resource state
-          API will use this to set AdapterStatus.last_report_time
-        format: date-time
-        type: string
-    required:
-      - observed_time
       - conditions
+      - created_time
+      - last_report_time
     type: object
   AdapterStatusList:
-    allOf:
-      - $ref: '#/definitions/List'
     description: List of adapter statuses with pagination metadata
     example:
       items:
@@ -668,7 +623,22 @@ definitions:
         items:
           $ref: '#/definitions/AdapterStatus'
         type: array
+      kind:
+        type: string
+      page:
+        format: int32
+        type: integer
+      size:
+        format: int32
+        type: integer
+      total:
+        format: int32
+        type: integer
     required:
+      - kind
+      - page
+      - size
+      - total
       - items
     type: object
   AutoscalingSpec:
@@ -709,8 +679,6 @@ definitions:
       - scheme
     type: object
   Cluster:
-    allOf:
-      - $ref: '#/definitions/ClusterBase'
     example:
       created_by: user-123@example.com
       created_time: '2021-01-01T00:00:00Z'
@@ -780,6 +748,28 @@ definitions:
         format: int32
         minimum: 1
         type: integer
+      href:
+        description: Resource URI
+        type: string
+      id:
+        description: Resource identifier
+        type: string
+      kind:
+        description: Resource kind
+        type: string
+      labels:
+        additionalProperties:
+          type: string
+        description: 'labels for the API resource as pairs of name:value strings'
+        type: object
+      name:
+        description: Cluster name (unique)
+        maxLength: 63
+        minLength: 3
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+        type: string
+      spec:
+        $ref: '#/definitions/ClusterSpec'
       status:
         $ref: '#/definitions/ClusterStatus'
       updated_by:
@@ -789,6 +779,8 @@ definitions:
         format: date-time
         type: string
     required:
+      - name
+      - spec
       - created_time
       - updated_time
       - created_by
@@ -796,37 +788,7 @@ definitions:
       - generation
       - status
     type: object
-  ClusterBase:
-    allOf:
-      - $ref: '#/definitions/APIResource'
-    properties:
-      kind:
-        default: Cluster
-        type: string
-      name:
-        description: Cluster name (unique)
-        maxLength: 63
-        minLength: 3
-        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
-        type: string
-      spec:
-        allOf:
-          - $ref: '#/definitions/ClusterSpec'
-        description: >-
-          Cluster specification
-
-          CLM doesn't know how to unmarshall the spec, it only stores and
-          forwards to adapters to do their job
-
-          But CLM will validate the schema before accepting the request
-    required:
-      - kind
-      - name
-      - spec
-    type: object
   ClusterCreateRequest:
-    allOf:
-      - $ref: '#/definitions/ClusterBase'
     example:
       kind: Cluster
       labels:
@@ -853,16 +815,55 @@ definitions:
         release:
           image: 'registry.redhat.io/openshift4/ose-cluster-version-operator:v4.14.0'
           version: 4.14.0
+    properties:
+      href:
+        description: Resource URI
+        type: string
+      id:
+        description: Resource identifier
+        type: string
+      kind:
+        description: Resource kind
+        type: string
+      labels:
+        additionalProperties:
+          type: string
+        description: 'labels for the API resource as pairs of name:value strings'
+        type: object
+      name:
+        description: Cluster name (unique)
+        maxLength: 63
+        minLength: 3
+        pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
+        type: string
+      spec:
+        $ref: '#/definitions/ClusterSpec'
+    required:
+      - name
+      - spec
     type: object
   ClusterList:
-    allOf:
-      - $ref: '#/definitions/List'
     properties:
       items:
         items:
           $ref: '#/definitions/Cluster'
         type: array
+      kind:
+        type: string
+      page:
+        format: int32
+        type: integer
+      size:
+        format: int32
+        type: integer
+      total:
+        format: int32
+        type: integer
     required:
+      - kind
+      - page
+      - size
+      - total
       - items
     type: object
   ClusterNetworkEntry:
@@ -961,66 +962,13 @@ definitions:
         format: int32
         type: integer
       phase:
-        allOf:
-          - $ref: '#/definitions/ResourcePhase'
-        description: |-
-          Current cluster phase (native database column).
-          Updated when conditions are reported.
-          Note: status.phase provides aggregated view from all conditions.
+        $ref: '#/definitions/ResourcePhase'
     required:
       - phase
       - last_transition_time
       - observed_generation
       - last_updated_time
       - conditions
-    type: object
-  ConditionBase:
-    description: Base condition fields shared by all condition types
-    properties:
-      last_transition_time:
-        description: >-
-          When this condition last transitioned status (API-managed)
-
-          Only updated when status changes (True/False/Unknown), not when
-          reason/message changes
-        format: date-time
-        type: string
-      message:
-        description: Human-readable message
-        type: string
-      reason:
-        description: Machine-readable reason code
-        type: string
-      status:
-        allOf:
-          - $ref: '#/definitions/ConditionStatus'
-        description: Condition status
-      type:
-        description: Condition type
-        type: string
-    required:
-      - type
-      - status
-      - last_transition_time
-    type: object
-  ConditionRequest:
-    description: >-
-      Condition data for create/update requests (from adapters)
-
-      observed_generation and observed_time are now at
-      AdapterStatusCreateRequest level
-    properties:
-      message:
-        type: string
-      reason:
-        type: string
-      status:
-        $ref: '#/definitions/ConditionStatus'
-      type:
-        type: string
-    required:
-      - type
-      - status
     type: object
   ConditionStatus:
     description: Status value for conditions
@@ -1063,29 +1011,6 @@ definitions:
       reason:
         type: string
     type: object
-  List:
-    properties:
-      items:
-        items: {}
-        type: array
-      kind:
-        type: string
-      page:
-        format: int32
-        type: integer
-      size:
-        format: int32
-        type: integer
-      total:
-        format: int32
-        type: integer
-    required:
-      - kind
-      - page
-      - size
-      - total
-      - items
-    type: object
   NetworkingSpec:
     properties:
       clusterNetwork:
@@ -1098,8 +1023,6 @@ definitions:
         type: array
     type: object
   NodePool:
-    allOf:
-      - $ref: '#/definitions/NodePoolBase'
     example:
       created_by: user-123@example.com
       created_time: '2021-01-01T00:00:00Z'
@@ -1173,27 +1096,6 @@ definitions:
         format: int32
         minimum: 1
         type: integer
-      owner_references:
-        $ref: '#/definitions/ObjectReference'
-      status:
-        $ref: '#/definitions/NodePoolStatus'
-      updated_by:
-        format: email
-        type: string
-      updated_time:
-        format: date-time
-        type: string
-    required:
-      - created_time
-      - updated_time
-      - created_by
-      - updated_by
-      - generation
-      - owner_references
-      - status
-    type: object
-  NodePoolBase:
-    properties:
       href:
         description: Resource URI
         type: string
@@ -1214,19 +1116,28 @@ definitions:
         minLength: 3
         pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
         type: string
+      owner_references:
+        $ref: '#/definitions/ObjectReference'
       spec:
-        allOf:
-          - $ref: '#/definitions/NodePoolSpec'
-        description: >-
-          NodePool specification
-
-          CLM doesn't know how to unmarshall the spec, it only stores and
-          forwards to adapters to do their job
-
-          But CLM will validate the schema before accepting the request
+        $ref: '#/definitions/NodePoolSpec'
+      status:
+        $ref: '#/definitions/NodePoolStatus'
+      updated_by:
+        format: email
+        type: string
+      updated_time:
+        format: date-time
+        type: string
     required:
       - name
       - spec
+      - created_time
+      - updated_time
+      - created_by
+      - updated_by
+      - generation
+      - owner_references
+      - status
     type: object
   NodePoolCreateRequest:
     example:
@@ -1276,15 +1187,7 @@ definitions:
         pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
         type: string
       spec:
-        allOf:
-          - $ref: '#/definitions/NodePoolSpec'
-        description: >-
-          NodePool specification
-
-          CLM doesn't know how to unmarshall the spec, it only stores and
-          forwards to adapters to do their job
-
-          But CLM will validate the schema before accepting the request
+        $ref: '#/definitions/NodePoolSpec'
     required:
       - name
       - spec
@@ -1327,15 +1230,7 @@ definitions:
       owner_references:
         $ref: '#/definitions/ObjectReference'
       spec:
-        allOf:
-          - $ref: '#/definitions/NodePoolSpec'
-        description: >-
-          NodePool specification
-
-          CLM doesn't know how to unmarshall the spec, it only stores and
-          forwards to adapters to do their job
-
-          But CLM will validate the schema before accepting the request
+        $ref: '#/definitions/NodePoolSpec'
       status:
         $ref: '#/definitions/NodePoolStatus'
       updated_by:
@@ -1345,6 +1240,8 @@ definitions:
         format: date-time
         type: string
     required:
+      - name
+      - spec
       - created_time
       - updated_time
       - created_by
@@ -1352,18 +1249,29 @@ definitions:
       - generation
       - owner_references
       - status
-      - name
-      - spec
     type: object
   NodePoolList:
-    allOf:
-      - $ref: '#/definitions/List'
     properties:
       items:
         items:
           $ref: '#/definitions/NodePool'
         type: array
+      kind:
+        type: string
+      page:
+        format: int32
+        type: integer
+      size:
+        format: int32
+        type: integer
+      total:
+        format: int32
+        type: integer
     required:
+      - kind
+      - page
+      - size
+      - total
       - items
     type: object
   NodePoolPlatform:
@@ -1463,12 +1371,7 @@ definitions:
         minimum: 1
         type: integer
       phase:
-        allOf:
-          - $ref: '#/definitions/ResourcePhase'
-        description: |-
-          Current NodePool phase (native database column).
-          Updated when conditions are reported.
-          Note: status.phase provides aggregated view from all conditions.
+        $ref: '#/definitions/ResourcePhase'
     required:
       - phase
       - observed_generation
@@ -1501,8 +1404,6 @@ definitions:
         type: string
     type: object
   ResourceCondition:
-    allOf:
-      - $ref: '#/definitions/ConditionBase'
     description: >-
       Condition in Cluster/NodePool status
 
@@ -1516,6 +1417,14 @@ definitions:
         description: When this condition was first created (API-managed)
         format: date-time
         type: string
+      last_transition_time:
+        description: >-
+          When this condition last transitioned status (API-managed)
+
+          Only updated when status changes (True/False/Unknown), not when
+          reason/message changes
+        format: date-time
+        type: string
       last_updated_time:
         description: >-
           When the corresponding adapter last reported (API-managed)
@@ -1526,11 +1435,25 @@ definitions:
           Copied from AdapterStatus.last_report_time
         format: date-time
         type: string
+      message:
+        description: Human-readable message
+        type: string
       observed_generation:
         description: Generation of the spec that this condition reflects
         format: int32
         type: integer
+      reason:
+        description: Machine-readable reason code
+        type: string
+      status:
+        $ref: '#/definitions/ConditionStatus'
+      type:
+        description: Condition type
+        type: string
     required:
+      - type
+      - status
+      - last_transition_time
       - observed_generation
       - created_time
       - last_updated_time

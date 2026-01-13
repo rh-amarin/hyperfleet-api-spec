@@ -72,7 +72,8 @@ model ErrorResponse<Kind, ErrorCode> {
     @body error: Error;
 }
 
-model APIResource extends ObjectReference {
+model APIResource {
+  ...ObjectReference;
     /** labels for the API resource as pairs of name:value strings */
     labels?: Record<string>;
 }
@@ -102,7 +103,8 @@ model SearchParams {
     search?: string;
 }
 
-model QueryParams extends SearchParams {
+model QueryParams {
+    ...SearchParams;
     @query
     page?: int32 = 1;
 
@@ -116,10 +118,10 @@ model QueryParams extends SearchParams {
     order?: OrderDirection;
 }
 
-model List {
+model List<T> {
     kind: string;
     page: int32;
     size: int32;
     total: int32;
-    items: unknown[];
+    items: T[];
 }

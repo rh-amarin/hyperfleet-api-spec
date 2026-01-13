@@ -13,10 +13,6 @@ model NodePoolBase {
   @pattern("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
   name: string;
 
-  /** NodePool specification
-   * CLM doesn't know how to unmarshall the spec, it only stores and forwards to adapters to do their job
-   * But CLM will validate the schema before accepting the request
-   */
   spec: NodePoolSpec;
 }
 
@@ -26,11 +22,6 @@ model NodePoolBase {
  * This object is computed by the service and CANNOT be modified directly.
  */
 model NodePoolStatus {
-  /**
-   * Current NodePool phase (native database column).
-   * Updated when conditions are reported.
-   * Note: status.phase provides aggregated view from all conditions.
-   */
   phase: ResourcePhase;
 
   /**
@@ -58,7 +49,8 @@ model NodePoolStatus {
 }
 
 @example(exampleNodePool)
-model NodePool extends NodePoolBase {
+model NodePool {
+  ...NodePoolBase;
   ...APICreatedResource;
 
   /**
@@ -80,6 +72,6 @@ model NodePoolCreateResponse {
   ...NodePool;
 }
 
-model NodePoolList extends List {
-  items: NodePool[];
+model NodePoolList {
+  ...List<NodePool>;
 }
