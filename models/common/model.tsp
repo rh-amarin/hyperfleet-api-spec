@@ -43,32 +43,88 @@ model ObjectReference2<Kind> {
     href: string;
 }
 
-@defaultResponse
-model Error {
-    id?: string;
-
-    /** Resource kind */
-    kind?: string;
-
-    /** Resource URI */
-    href?: string;
-
-    code?: string;
-    reason?: string;
-    operation_id?: string;
-
-    /** Field-level validation errors (optional) */
-    details?: {
-        /** Field path that failed validation */
-        field?: string;
-        /** Validation error message for this field */
-        error?: string;
-    }[];
+/**
+ * Validation constraint types for field-level errors
+ */
+enum ValidationConstraint {
+    required: "required",
+    min: "min",
+    max: "max",
+    min_length: "min_length",
+    max_length: "max_length",
+    pattern_match: "pattern",
+    enum_value: "enum",
+    format_check: "format",
+    unique: "unique",
 }
 
-model ErrorResponse<Kind, ErrorCode> {
-    kind: Kind;
+/**
+ * Field-level validation error detail (RFC 9457 extension)
+ */
+model ValidationError {
+    /** JSON path to the field that failed validation */
+    @example("spec.name")
+    field: string;
+
+    /** The invalid value that was provided (if safe to include) */
+    value?: unknown;
+
+    /** The validation constraint that was violated */
+    constraint?: ValidationConstraint;
+
+    /** Human-readable error message for this field */
+    @example("Cluster name is required")
+    message: string;
+}
+
+/**
+ * RFC 9457 Problem Details error format with HyperFleet extensions
+ */
+@defaultResponse
+model Error {
+    @header contentType: "application/problem+json";
+    /** URI reference identifying the problem type */
+    @format("uri")
+    @example("https://api.hyperfleet.io/errors/validation-error")
+    type: string;
+
+    /** Short human-readable summary of the problem */
+    @example("Validation Failed")
+    title: string;
+
+    /** HTTP status code */
+    @example(400)
+    status: int32;
+
+    /** Human-readable explanation specific to this occurrence */
+    @example("The cluster name field is required")
+    detail?: string;
+
+    /** URI reference for this specific occurrence */
+    @format("uri")
+    @example("/api/hyperfleet/v1/clusters")
+    instance?: string;
+
+    /** Machine-readable error code in HYPERFLEET-CAT-NUM format */
+    @example("HYPERFLEET-VAL-001")
+    code?: string;
+
+    /** RFC3339 timestamp of when the error occurred */
+    @format("date-time")
+    @example("2024-01-15T10:30:00Z")
+    timestamp?: string;
+
+    /** Distributed trace ID for correlation */
+    @example("abc123def456")
+    trace_id?: string;
+
+    /** Field-level validation errors (for validation failures) */
+    errors?: ValidationError[];
+}
+
+model ErrorResponse<ErrorCode> {
     @statusCode statusCode: ErrorCode;
+    @header contentType: "application/problem+json";
     @body error: Error;
 }
 

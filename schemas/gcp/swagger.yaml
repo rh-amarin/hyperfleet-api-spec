@@ -16,7 +16,7 @@ info:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
   title: HyperFleet API
-  version: 1.0.2
+  version: 1.0.3
 host: hyperfleet.redhat.com
 basePath: /
 schemes:
@@ -26,6 +26,7 @@ paths:
     get:
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: >-
             Filter results using TSL (Tree Search Language) query syntax.
@@ -80,6 +81,7 @@ paths:
         - application/json
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - in: body
           name: body
@@ -118,6 +120,7 @@ paths:
     get:
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: >-
             Filter results using TSL (Tree Search Language) query syntax.
@@ -151,6 +154,7 @@ paths:
     get:
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: Cluster ID
           in: path
@@ -211,6 +215,7 @@ paths:
         - application/json
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: Cluster ID
           in: path
@@ -244,6 +249,7 @@ paths:
     get:
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: Cluster ID
           in: path
@@ -275,6 +281,7 @@ paths:
     get:
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: Cluster ID
           in: path
@@ -393,6 +400,7 @@ paths:
     get:
       produces:
         - application/json
+        - application/problem+json
       parameters:
         - description: >-
             Filter results using TSL (Tree Search Language) query syntax.
@@ -983,33 +991,53 @@ definitions:
         type: string
     type: object
   Error:
+    description: RFC 9457 Problem Details error format with HyperFleet extensions
     properties:
       code:
+        description: Machine-readable error code in HYPERFLEET-CAT-NUM format
+        example: HYPERFLEET-VAL-001
         type: string
-      details:
-        description: Field-level validation errors (optional)
+      detail:
+        description: Human-readable explanation specific to this occurrence
+        example: The cluster name field is required
+        type: string
+      errors:
+        description: Field-level validation errors (for validation failures)
         items:
-          properties:
-            error:
-              description: Validation error message for this field
-              type: string
-            field:
-              description: Field path that failed validation
-              type: string
-          type: object
+          $ref: '#/definitions/ValidationError'
         type: array
-      href:
-        description: Resource URI
+      instance:
+        description: URI reference for this specific occurrence
+        example: /api/hyperfleet/v1/clusters
+        format: uri
         type: string
-      id:
+      status:
+        description: HTTP status code
+        example: 400
+        format: int32
+        type: integer
+      timestamp:
+        description: RFC3339 timestamp of when the error occurred
+        example: '2024-01-15T10:30:00Z'
+        format: date-time
         type: string
-      kind:
-        description: Resource kind
+      title:
+        description: Short human-readable summary of the problem
+        example: Validation Failed
         type: string
-      operation_id:
+      trace_id:
+        description: Distributed trace ID for correlation
+        example: abc123def456
         type: string
-      reason:
+      type:
+        description: URI reference identifying the problem type
+        example: 'https://api.hyperfleet.io/errors/validation-error'
+        format: uri
         type: string
+    required:
+      - type
+      - title
+      - status
     type: object
   NetworkingSpec:
     properties:
@@ -1480,6 +1508,40 @@ definitions:
     required:
       - key
       - effect
+    type: object
+  ValidationConstraint:
+    description: Validation constraint types for field-level errors
+    enum:
+      - required
+      - min
+      - max
+      - min_length
+      - max_length
+      - pattern
+      - enum
+      - format
+      - unique
+    type: string
+  ValidationError:
+    description: Field-level validation error detail (RFC 9457 extension)
+    properties:
+      constraint:
+        allOf:
+          - $ref: '#/definitions/ValidationConstraint'
+        description: The validation constraint that was violated
+      field:
+        description: JSON path to the field that failed validation
+        example: spec.name
+        type: string
+      message:
+        description: Human-readable error message for this field
+        example: Cluster name is required
+        type: string
+      value:
+        description: The invalid value that was provided (if safe to include)
+    required:
+      - field
+      - message
     type: object
 securityDefinitions:
   BearerAuth:
