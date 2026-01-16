@@ -878,7 +878,6 @@ components:
           example: Validation Failed
         status:
           type: integer
-          format: int32
           description: HTTP status code
           example: 400
         detail:
@@ -1357,19 +1356,6 @@ components:
             - NoSchedule
             - PreferNoSchedule
             - NoExecute
-    ValidationConstraint:
-      type: string
-      enum:
-        - required
-        - min
-        - max
-        - min_length
-        - max_length
-        - pattern
-        - enum
-        - format
-        - unique
-      description: Validation constraint types for field-level errors
     ValidationError:
       type: object
       required:
@@ -1383,14 +1369,24 @@ components:
         value:
           description: The invalid value that was provided (if safe to include)
         constraint:
-          allOf:
-            - $ref: '#/components/schemas/ValidationConstraint'
+          type: string
+          enum:
+            - required
+            - min
+            - max
+            - min_length
+            - max_length
+            - pattern
+            - enum
+            - format
+            - unique
           description: The validation constraint that was violated
+          example: required
         message:
           type: string
           description: Human-readable error message for this field
           example: Cluster name is required
-      description: Field-level validation error detail (RFC 9457 extension)
+      description: Field-level validation error detail
   securitySchemes:
     BearerAuth:
       type: http

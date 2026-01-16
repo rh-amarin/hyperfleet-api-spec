@@ -1014,7 +1014,6 @@ definitions:
       status:
         description: HTTP status code
         example: 400
-        format: int32
         type: integer
       timestamp:
         description: RFC3339 timestamp of when the error occurred
@@ -1509,26 +1508,23 @@ definitions:
       - key
       - effect
     type: object
-  ValidationConstraint:
-    description: Validation constraint types for field-level errors
-    enum:
-      - required
-      - min
-      - max
-      - min_length
-      - max_length
-      - pattern
-      - enum
-      - format
-      - unique
-    type: string
   ValidationError:
-    description: Field-level validation error detail (RFC 9457 extension)
+    description: Field-level validation error detail
     properties:
       constraint:
-        allOf:
-          - $ref: '#/definitions/ValidationConstraint'
         description: The validation constraint that was violated
+        enum:
+          - required
+          - min
+          - max
+          - min_length
+          - max_length
+          - pattern
+          - enum
+          - format
+          - unique
+        example: required
+        type: string
       field:
         description: JSON path to the field that failed validation
         example: spec.name

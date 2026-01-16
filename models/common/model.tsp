@@ -44,22 +44,7 @@ model ObjectReference2<Kind> {
 }
 
 /**
- * Validation constraint types for field-level errors
- */
-enum ValidationConstraint {
-    required: "required",
-    min: "min",
-    max: "max",
-    min_length: "min_length",
-    max_length: "max_length",
-    pattern_match: "pattern",
-    enum_value: "enum",
-    format_check: "format",
-    unique: "unique",
-}
-
-/**
- * Field-level validation error detail (RFC 9457 extension)
+ * Field-level validation error detail
  */
 model ValidationError {
     /** JSON path to the field that failed validation */
@@ -70,7 +55,8 @@ model ValidationError {
     value?: unknown;
 
     /** The validation constraint that was violated */
-    constraint?: ValidationConstraint;
+    @example("required")
+    constraint?: "required" | "min" | "max" | "min_length" | "max_length" | "pattern" | "enum" | "format" | "unique";
 
     /** Human-readable error message for this field */
     @example("Cluster name is required")
@@ -94,7 +80,7 @@ model Error {
 
     /** HTTP status code */
     @example(400)
-    status: int32;
+    status: integer;
 
     /** Human-readable explanation specific to this occurrence */
     @example("The cluster name field is required")
