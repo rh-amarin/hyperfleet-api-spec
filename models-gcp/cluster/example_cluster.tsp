@@ -36,7 +36,7 @@ const exampleCluster: Cluster = #{
   status: #{
     conditions: #[
       #{
-        type: "Available",
+        type: ConditionType.Available,
         status: ConditionStatus.True,
         reason: "ResourceAvailable",
         message: "Cluster is accessible",

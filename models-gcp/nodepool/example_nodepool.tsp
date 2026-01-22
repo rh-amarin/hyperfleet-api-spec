@@ -43,7 +43,7 @@ const exampleNodePool: NodePool = #{
   status: #{
     conditions: #[
       #{
-        type: "Available",
+        type: ConditionType.Available,
         status: ConditionStatus.True,
         reason: "ResourceAvailable",
         message: "NodePool is accessible",
@@ -53,7 +53,7 @@ const exampleNodePool: NodePool = #{
         last_transition_time: "2021-01-01T10:00:00Z",
       },
       #{
-        type: "Ready",
+        type: ConditionType.Ready,
         status: ConditionStatus.True,
         reason: "ResourceReady",
         message: "NodePool is ready",

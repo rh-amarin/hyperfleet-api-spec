@@ -6,7 +6,7 @@ const exampleAdapterStatus: AdapterStatus = (#{
   observed_generation: 1,
   conditions: #[
     #{
-      type: "Available",
+      type: ConditionType.Available,
       status: ConditionStatus.True,
       reason: "All validations passed",
       message: "All 30 validation tests passed",
@@ -53,7 +53,7 @@ const exampleAdapterStatusCreateRequest: AdapterStatusCreateRequest = (#{
   observed_time: "2021-01-01T10:00:00Z",
   conditions: #[
     #{
-      type: "Available",
+      type: ConditionType.Available,
       status: ConditionStatus.True,
       reason: "All validations passed",
       message: "All 30 validation tests passed",
@@ -100,7 +100,7 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
       observed_generation: 1,
       conditions: #[
         #{
-          type: "Available",
+          type: ConditionType.Available,
           status: ConditionStatus.True,
           reason: "All validations passed",
           message: "All 30 validation tests passed",
@@ -119,7 +119,7 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
       observed_generation: 1,
       conditions: #[
         #{
-          type: "Available",
+          type: ConditionType.Available,
           status: ConditionStatus.True,
           reason: "DNS configured",
           message: "DNS records created",

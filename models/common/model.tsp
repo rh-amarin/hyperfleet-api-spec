@@ -158,3 +158,9 @@ model List<T> {
     total: int32;
     items: T[];
 }
+
+union ConditionType {
+    string,
+    Available: "Available",
+    Ready: "Ready"
+}

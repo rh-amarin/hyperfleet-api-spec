@@ -21,7 +21,7 @@ const exampleNodePool: NodePool = #{
   status: #{
     conditions: #[
       #{
-        type: "Available",
+        type: ConditionType.Available,
         status: ConditionStatus.True,
         reason: "ResourceAvailable",
         message: "NodePool is accessible",
