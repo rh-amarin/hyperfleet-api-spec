@@ -479,8 +479,8 @@ definitions:
         description: >-
           When this condition last transitioned status (API-managed)
 
-          Only updated when status changes (True/False/Unknown), not when
-          reason/message changes
+          Only updated when status changes (True/False), not when reason/message
+          changes
         format: date-time
         type: string
       message:
@@ -490,15 +490,22 @@ definitions:
         description: Machine-readable reason code
         type: string
       status:
-        $ref: '#/definitions/ConditionStatus'
+        $ref: '#/definitions/AdapterConditionStatus'
       type:
         description: Condition type
         type: string
     required:
       - type
-      - status
       - last_transition_time
+      - status
     type: object
+  AdapterConditionStatus:
+    description: Status value for adapter conditions
+    enum:
+      - 'True'
+      - 'False'
+      - Unknown
+    type: string
   AdapterStatus:
     description: |-
       AdapterStatus represents the complete status report from an adapter
@@ -968,13 +975,6 @@ definitions:
     required:
       - conditions
     type: object
-  ConditionStatus:
-    description: Status value for conditions
-    enum:
-      - 'True'
-      - 'False'
-      - Unknown
-    type: string
   DNSSpec:
     properties:
       baseDomain:
@@ -1429,8 +1429,8 @@ definitions:
         description: >-
           When this condition last transitioned status (API-managed)
 
-          Only updated when status changes (True/False/Unknown), not when
-          reason/message changes
+          Only updated when status changes (True/False), not when reason/message
+          changes
         format: date-time
         type: string
       last_updated_time:
@@ -1454,18 +1454,24 @@ definitions:
         description: Machine-readable reason code
         type: string
       status:
-        $ref: '#/definitions/ConditionStatus'
+        $ref: '#/definitions/ResourceConditionStatus'
       type:
         description: Condition type
         type: string
     required:
       - type
-      - status
       - last_transition_time
+      - status
       - observed_generation
       - created_time
       - last_updated_time
     type: object
+  ResourceConditionStatus:
+    description: Status value for resource conditions
+    enum:
+      - 'True'
+      - 'False'
+    type: string
   TaintSpec:
     properties:
       effect:

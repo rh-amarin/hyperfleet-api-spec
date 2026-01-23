@@ -2,40 +2,11 @@ import "../common/model.tsp";
 import "./example_adapter_status.tsp";
 
 /**
- * Status value for conditions
+ * Status value for resource conditions
  */
-enum ConditionStatus {
+enum ResourceConditionStatus {
     True: "True",
     False: "False",
-    Unknown,
-}
-
-/**
- * Base condition fields shared by all condition types
- */
-model ConditionBase {
-  /**
-   * Condition type
-   */
-  type: string;
-
-  status: ConditionStatus;
-
-  /**
-   * Machine-readable reason code
-   */
-  reason?: string;
-
-  /**
-   * Human-readable message
-   */
-  message?: string;
-
-  /**
-   * When this condition last transitioned status (API-managed)
-   * Only updated when status changes (True/False), not when reason/message changes
-   */
-  @format("date-time") last_transition_time: string;
 }
 
 /**
@@ -46,33 +17,10 @@ model ConditionBase {
  */
 model AdapterCondition {
   ...ConditionBase;
-  // No additional fields - inherits all fields from ConditionBase
+
+  status: AdapterConditionStatus;
 }
 
-/**
- * Condition in Cluster/NodePool status
- * Used for semantic condition types: "ValidationSuccessful", "DNSSuccessful", "NodePoolSuccessful", etc.
- * Includes observed_generation and last_updated_time to track adapter-specific state
- */
-model ResourceCondition {
-  ...ConditionBase;
-  /**
-   * Generation of the spec that this condition reflects
-   */
-  observed_generation: int32;
-
-  /**
-   * When this condition was first created (API-managed)
-   */
-  @format("date-time") created_time: string;
-
-  /**
-   * When the corresponding adapter last reported (API-managed)
-   * Updated every time the adapter POSTs, even if condition status hasn't changed
-   * Copied from AdapterStatus.last_report_time
-   */
-  @format("date-time") last_updated_time: string;
-}
 
 /**
  * Condition data for create/update requests (from adapters)
@@ -80,7 +28,7 @@ model ResourceCondition {
  */
 model ConditionRequest {
   type: string;
-  status: ConditionStatus;
+  status: AdapterConditionStatus;
   reason?: string;
   message?: string;
 }

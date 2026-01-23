@@ -37,7 +37,7 @@ const exampleCluster: Cluster = #{
     conditions: #[
       #{
         type: "Ready",
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "ResourceReady",
         message: "All conditions successful for current spec generation",
         observed_generation: 1,
@@ -47,7 +47,7 @@ const exampleCluster: Cluster = #{
       },
       #{
         type: ConditionType.Available,
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "ResourceAvailable",
         message: "All conditions successful for observed_generation",
         observed_generation: 1,
@@ -57,7 +57,7 @@ const exampleCluster: Cluster = #{
       },
       #{
         type: "ValidationSuccessful",
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "All validations passed",
         message: "All 30 validation tests passed",
         observed_generation: 1,
@@ -67,7 +67,7 @@ const exampleCluster: Cluster = #{
       },
       #{
         type: "DNSSuccessful",
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "DNS configured",
         message: "DNS records created for custom.domain.com",
         observed_generation: 1,

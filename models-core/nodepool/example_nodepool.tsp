@@ -22,7 +22,7 @@ const exampleNodePool: NodePool = #{
     conditions: #[
       #{
         type: "Ready",
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "ResourceReady",
         message: "NodePool is ready",
         message: "All conditions successful for observed_generation",
@@ -33,7 +33,7 @@ const exampleNodePool: NodePool = #{
       },
       #{
         type: ConditionType.Available,
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "ResourceAvailable",
         message: "All conditions successful for current spec generation",
         observed_generation: 1,
@@ -43,7 +43,7 @@ const exampleNodePool: NodePool = #{
       },
       #{
         type: "ValidationSuccessful",
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "All validations passed",
         message: "NodePool validation passed",
         observed_generation: 1,
@@ -53,7 +53,7 @@ const exampleNodePool: NodePool = #{
       },
       #{
         type: "NodePoolSuccessful",
-        status: ConditionStatus.True,
+        status: ResourceConditionStatus.True,
         reason: "NodePool provisioned successfully",
         message: "NodePool has been scaled to desired count",
         observed_generation: 1,

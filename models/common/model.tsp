@@ -164,3 +164,66 @@ union ConditionType {
     Available: "Available",
     Ready: "Ready"
 }
+
+/**
+ * Base condition fields shared by all condition types
+ */
+model ConditionBase {
+  /**
+   * Condition type
+   */
+  type: string;
+
+  /**
+   * Machine-readable reason code
+   */
+  reason?: string;
+
+  /**
+   * Human-readable message
+   */
+  message?: string;
+
+  /**
+   * When this condition last transitioned status (API-managed)
+   * Only updated when status changes (True/False), not when reason/message changes
+   */
+  @format("date-time") last_transition_time: string;
+}
+
+/**
+ * Status value for adapter conditions
+ */
+enum AdapterConditionStatus {
+    True: "True",
+    False: "False",
+    Unknown,
+}
+
+/**
+ * Condition in Cluster/NodePool status
+ * Used for semantic condition types: "ValidationSuccessful", "DNSSuccessful", "NodePoolSuccessful", etc.
+ * Includes observed_generation and last_updated_time to track adapter-specific state
+ */
+model ResourceCondition {
+  ...ConditionBase;
+
+  status: ResourceConditionStatus;
+
+  /**
+   * Generation of the spec that this condition reflects
+   */
+  observed_generation: int32;
+
+  /**
+   * When this condition was first created (API-managed)
+   */
+  @format("date-time") created_time: string;
+
+  /**
+   * When the corresponding adapter last reported (API-managed)
+   * Updated every time the adapter POSTs, even if condition status hasn't changed
+   * Copied from AdapterStatus.last_report_time
+   */
+  @format("date-time") last_updated_time: string;
+}

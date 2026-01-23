@@ -428,14 +428,12 @@ components:
       type: object
       required:
         - type
-        - status
         - last_transition_time
+        - status
       properties:
         type:
           type: string
           description: Condition type
-        status:
-          $ref: '#/components/schemas/ConditionStatus'
         reason:
           type: string
           description: Machine-readable reason code
@@ -447,12 +445,21 @@ components:
           format: date-time
           description: |-
             When this condition last transitioned status (API-managed)
-            Only updated when status changes (True/False/Unknown), not when reason/message changes
+            Only updated when status changes (True/False), not when reason/message changes
+        status:
+          $ref: '#/components/schemas/AdapterConditionStatus'
       description: |-
         Condition in AdapterStatus
         Used for standard Kubernetes condition types: "Available", "Applied", "Health"
         Note: observed_generation is at AdapterStatus level, not per-condition,
         since all conditions in one AdapterStatus share the same observed generation
+    AdapterConditionStatus:
+      type: string
+      enum:
+        - 'True'
+        - 'False'
+        - Unknown
+      description: Status value for adapter conditions
     AdapterStatus:
       type: object
       required:
@@ -892,7 +899,7 @@ components:
         type:
           type: string
         status:
-          $ref: '#/components/schemas/ConditionStatus'
+          $ref: '#/components/schemas/AdapterConditionStatus'
         reason:
           type: string
         message:
@@ -900,13 +907,6 @@ components:
       description: |-
         Condition data for create/update requests (from adapters)
         observed_generation and observed_time are now at AdapterStatusCreateRequest level
-    ConditionStatus:
-      type: string
-      enum:
-        - 'True'
-        - 'False'
-        - Unknown
-      description: Status value for conditions
     Error:
       type: object
       required:
@@ -1226,8 +1226,8 @@ components:
       type: object
       required:
         - type
-        - status
         - last_transition_time
+        - status
         - observed_generation
         - created_time
         - last_updated_time
@@ -1235,8 +1235,6 @@ components:
         type:
           type: string
           description: Condition type
-        status:
-          $ref: '#/components/schemas/ConditionStatus'
         reason:
           type: string
           description: Machine-readable reason code
@@ -1248,7 +1246,9 @@ components:
           format: date-time
           description: |-
             When this condition last transitioned status (API-managed)
-            Only updated when status changes (True/False/Unknown), not when reason/message changes
+            Only updated when status changes (True/False), not when reason/message changes
+        status:
+          $ref: '#/components/schemas/ResourceConditionStatus'
         observed_generation:
           type: integer
           format: int32
@@ -1268,6 +1268,12 @@ components:
         Condition in Cluster/NodePool status
         Used for semantic condition types: "ValidationSuccessful", "DNSSuccessful", "NodePoolSuccessful", etc.
         Includes observed_generation and last_updated_time to track adapter-specific state
+    ResourceConditionStatus:
+      type: string
+      enum:
+        - 'True'
+        - 'False'
+      description: Status value for resource conditions
     ValidationError:
       type: object
       required:
