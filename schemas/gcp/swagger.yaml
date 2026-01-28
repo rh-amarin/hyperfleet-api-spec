@@ -511,21 +511,21 @@ definitions:
       AdapterStatus represents the complete status report from an adapter
       Contains multiple conditions, job metadata, and adapter-specific data
     example:
-      adapter: validator
+      adapter: adapter1
       conditions:
         - last_transition_time: '2021-01-01T10:00:00Z'
-          message: All 30 validation tests passed
-          reason: All validations passed
+          message: This adapter1 is available
+          reason: This adapter1 is available
           status: 'True'
           type: Available
         - last_transition_time: '2021-01-01T10:00:00Z'
-          message: Validation job applied successfully
+          message: Adapter1 validation job applied successfully
           reason: Validation job applied
           status: 'True'
           type: Applied
         - last_transition_time: '2021-01-01T10:00:00Z'
-          message: All adapter runtime operations completed successfully
-          reason: All adapter operations completed successfully
+          message: All adapter1 runtime operations completed successfully
+          reason: All adapter1 operations completed successfully
           status: 'True'
           type: Health
       created_time: '2021-01-01T10:00:00Z'
@@ -606,11 +606,11 @@ definitions:
     description: List of adapter statuses with pagination metadata
     example:
       items:
-        - adapter: validator
+        - adapter: adapter1
           conditions:
             - last_transition_time: '2021-01-01T10:00:00Z'
-              message: All 30 validation tests passed
-              reason: All validations passed
+              message: This adapter1 is available
+              reason: This adapter1 is available
               status: 'True'
               type: Available
           created_time: '2021-01-01T10:00:00Z'
@@ -619,11 +619,11 @@ definitions:
             duration: 2m
             job_name: validator-job-abc123
           observed_generation: 1
-        - adapter: dns
+        - adapter: adapter2
           conditions:
             - last_transition_time: '2021-01-01T10:01:00Z'
-              message: DNS records created
-              reason: DNS configured
+              message: This adapter2 is available
+              reason: This adapter2 is available
               status: 'True'
               type: Available
           created_time: '2021-01-01T10:01:00Z'
@@ -730,35 +730,35 @@ definitions:
           - created_time: '2021-01-01T10:00:00Z'
             last_transition_time: '2021-01-01T10:00:00Z'
             last_updated_time: '2021-01-01T10:00:00Z'
-            message: All conditions successful for current spec generation
+            message: All adapters reported Ready True for the current generation
             observed_generation: 1
-            reason: ResourceReady
+            reason: All adapters reported Ready True for the current generation
             status: 'True'
             type: Ready
           - created_time: '2021-01-01T10:00:00Z'
             last_transition_time: '2021-01-01T10:00:00Z'
             last_updated_time: '2021-01-01T10:00:00Z'
-            message: All conditions successful for observed_generation
+            message: All adapters reported Available True for the same generation
             observed_generation: 1
-            reason: ResourceAvailable
+            reason: All adapters reported Available True for the same generation
             status: 'True'
             type: Available
           - created_time: '2021-01-01T10:00:00Z'
             last_transition_time: '2021-01-01T10:00:00Z'
             last_updated_time: '2021-01-01T10:00:00Z'
-            message: All 30 validation tests passed
+            message: This adapter1 is available
             observed_generation: 1
-            reason: All validations passed
+            reason: This adapter1 is available
             status: 'True'
-            type: ValidationSuccessful
+            type: Adapter1Successful
           - created_time: '2021-01-01T10:01:00Z'
             last_transition_time: '2021-01-01T10:01:00Z'
             last_updated_time: '2021-01-01T10:01:00Z'
-            message: DNS records created for custom.domain.com
+            message: This adapter2 is available
             observed_generation: 1
-            reason: DNS configured
+            reason: This adapter2 is available
             status: 'True'
-            type: DNSSuccessful
+            type: Adapter2Successful
       updated_by: user-123@example.com
       updated_time: '2021-01-01T00:00:00Z'
     properties:
@@ -960,11 +960,11 @@ definitions:
 
           **Mandatory conditions**: 
 
-          - `type: "Available"`: indicates if the cluster is accessible and
-          functional.
+          - `type: "Ready"`: Whether all adapters report successfully at the
+          current generation.
 
-          - `type: "Ready"`: indicates if the cluster has reached its desired
-          state.
+          - `type: "Available"`: Aggregated adapter result for a common
+          observed_generation.   
 
 
           These conditions are present immediately upon resource creation.
@@ -1372,11 +1372,11 @@ definitions:
 
           **Mandatory conditions**: 
 
-          - `type: "Available"`: indicates if the nodepool is accessible and
-          functional.
+          - `type: "Ready"`: Whether all adapters report successfully at the
+          current generation.
 
-          - `type: "Ready"`: indicates if the nodepool has reached its desired
-          state.
+          - `type: "Available"`: Aggregated adapter result for a common
+          observed_generation.   
 
 
           These conditions are present immediately upon resource creation.

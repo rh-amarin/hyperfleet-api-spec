@@ -1,5 +1,6 @@
 import "../../aliases-gcp.tsp";
 import "../../models/clusters/model.tsp";
+import "../../models/common/model.tsp";
 
 const exampleCluster: Cluster = #{
   kind: "Cluster",
@@ -36,10 +37,10 @@ const exampleCluster: Cluster = #{
   status: #{
     conditions: #[
       #{
-        type: "Ready",
+        type: ConditionType.Ready,
         status: ResourceConditionStatus.True,
-        reason: "ResourceReady",
-        message: "All conditions successful for current spec generation",
+        reason: ExampleReadyReason,
+        message: ExampleReadyMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:00:00Z",
         last_updated_time: "2021-01-01T10:00:00Z",
@@ -48,28 +49,28 @@ const exampleCluster: Cluster = #{
       #{
         type: ConditionType.Available,
         status: ResourceConditionStatus.True,
-        reason: "ResourceAvailable",
-        message: "All conditions successful for observed_generation",
+        reason: ExampleAvailableReason,
+        message: ExampleAvailableMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:00:00Z",
         last_updated_time: "2021-01-01T10:00:00Z",
         last_transition_time: "2021-01-01T10:00:00Z",
       },
       #{
-        type: "ValidationSuccessful",
+        type: "Adapter1Successful",
         status: ResourceConditionStatus.True,
-        reason: "All validations passed",
-        message: "All 30 validation tests passed",
+        reason: ExampleAdapter1AvaliableReason,
+        message: ExampleAdapter1AvaliableMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:00:00Z",
         last_updated_time: "2021-01-01T10:00:00Z",
         last_transition_time: "2021-01-01T10:00:00Z",
       },
       #{
-        type: "DNSSuccessful",
+        type: "Adapter2Successful",
         status: ResourceConditionStatus.True,
-        reason: "DNS configured",
-        message: "DNS records created for custom.domain.com",
+        reason: ExampleAdapter2AvaliableReason,
+        message: ExampleAdapter2AvaliableMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:01:00Z",
         last_updated_time: "2021-01-01T10:01:00Z",

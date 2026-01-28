@@ -1,29 +1,30 @@
 import "../../models/statuses/model.tsp";
+import "../../models/common/model.tsp";
 
 // Example AdapterStatus for validator adapter
 const exampleAdapterStatus: AdapterStatus = (#{
-  adapter: "validator",
+  adapter: ExampleAdapter1,
   observed_generation: 1,
   conditions: #[
     #{
       type: ConditionType.Available,
       status: AdapterConditionStatus.True,
-      reason: "All validations passed",
-      message: "All 30 validation tests passed",
+      reason: ExampleAdapter1AvaliableReason,
+      message: ExampleAdapter1AvaliableMessage,
       last_transition_time: "2021-01-01T10:00:00Z",
     },
     #{
       type: "Applied",
       status: AdapterConditionStatus.True,
-      reason: "Validation job applied",
-      message: "Validation job applied successfully",
+      reason: ExampleAdapter1AppliedReason,
+      message: ExampleAdapter1AppliedMessage,
       last_transition_time: "2021-01-01T10:00:00Z",
     },
     #{
       type: "Health",
       status: AdapterConditionStatus.True,
-      reason: "All adapter operations completed successfully",
-      message: "All adapter runtime operations completed successfully",
+      reason: ExampleAdapter1HealthReason,
+      message: ExampleAdapter1HealthMessage,
       last_transition_time: "2021-01-01T10:00:00Z",
     }
   ],
@@ -55,20 +56,20 @@ const exampleAdapterStatusCreateRequest: AdapterStatusCreateRequest = (#{
     #{
       type: ConditionType.Available,
       status: AdapterConditionStatus.True,
-      reason: "All validations passed",
-      message: "All 30 validation tests passed",
+      reason: ExampleAdapter1AvaliableReason,
+      message: ExampleAdapter1AvaliableMessage,
     },
     #{
       type: "Applied",
       status: AdapterConditionStatus.True,
-      reason: "Validation job applied",
-      message: "Validation job applied successfully",
+      reason: ExampleAdapter1AppliedReason,
+      message: ExampleAdapter1AppliedMessage,
     },
     #{
       type: "Health",
       status: AdapterConditionStatus.True,
-      reason: "All adapter operations completed successfully",
-      message: "All adapter runtime operations completed successfully",
+      reason: ExampleAdapter1HealthReason,
+      message: ExampleAdapter1HealthMessage,
     }
   ],
   metadata: #{
@@ -96,14 +97,14 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
   total: 2,
   items: #[
     #{
-      adapter: "validator",
+      adapter: ExampleAdapter1,
       observed_generation: 1,
       conditions: #[
         #{
           type: ConditionType.Available,
           status: AdapterConditionStatus.True,
-          reason: "All validations passed",
-          message: "All 30 validation tests passed",
+          reason: ExampleAdapter1AvaliableReason,
+          message: ExampleAdapter1AvaliableMessage,
           last_transition_time: "2021-01-01T10:00:00Z",
         },
       ],
@@ -115,14 +116,14 @@ const exampleAdapterStatusList: AdapterStatusList = (#{
       last_report_time: "2021-01-01T10:02:00Z",
     },
     #{
-      adapter: "dns",
+      adapter: ExampleAdapter2,
       observed_generation: 1,
       conditions: #[
         #{
           type: ConditionType.Available,
           status: AdapterConditionStatus.True,
-          reason: "DNS configured",
-          message: "DNS records created",
+          reason: ExampleAdapter2AvaliableReason,
+          message: ExampleAdapter2AvaliableMessage,
           last_transition_time: "2021-01-01T10:01:00Z",
         },
       ],

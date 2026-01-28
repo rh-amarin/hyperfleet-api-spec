@@ -1,5 +1,6 @@
 import "../../aliases-core.tsp";
 import "../../models/nodepools/model.tsp";
+import "../../models/common/model.tsp";
 
 const exampleNodePool: NodePool = #{
   kind: "NodePool",
@@ -21,11 +22,10 @@ const exampleNodePool: NodePool = #{
   status: #{
     conditions: #[
       #{
-        type: "Ready",
+        type: ConditionType.Ready,
         status: ResourceConditionStatus.True,
-        reason: "ResourceReady",
-        message: "NodePool is ready",
-        message: "All conditions successful for observed_generation",
+        reason: ExampleReadyReason,
+        message: ExampleReadyMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:00:00Z",
         last_updated_time: "2021-01-01T10:00:00Z",
@@ -34,28 +34,28 @@ const exampleNodePool: NodePool = #{
       #{
         type: ConditionType.Available,
         status: ResourceConditionStatus.True,
-        reason: "ResourceAvailable",
-        message: "All conditions successful for current spec generation",
+        reason: ExampleAvailableReason,
+        message: ExampleAvailableMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:00:00Z",
         last_updated_time: "2021-01-01T10:00:00Z",
         last_transition_time: "2021-01-01T10:00:00Z",
       },
       #{
-        type: "ValidationSuccessful",
+        type: "Adapter1Successful",
         status: ResourceConditionStatus.True,
-        reason: "All validations passed",
-        message: "NodePool validation passed",
+        reason: ExampleAdapter1AvaliableReason,
+        message: ExampleAdapter1AvaliableMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:00:00Z",
         last_updated_time: "2021-01-01T10:00:00Z",
         last_transition_time: "2021-01-01T10:00:00Z",
       },
       #{
-        type: "NodePoolSuccessful",
+        type: "Adapter2Successful",
         status: ResourceConditionStatus.True,
-        reason: "NodePool provisioned successfully",
-        message: "NodePool has been scaled to desired count",
+        reason: ExampleAdapter2AvaliableReason,
+        message: ExampleAdapter2AvaliableMessage,
         observed_generation: 1,
         created_time: "2021-01-01T10:01:00Z",
         last_updated_time: "2021-01-01T10:01:00Z",
