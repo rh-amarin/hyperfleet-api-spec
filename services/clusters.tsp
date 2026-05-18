@@ -90,4 +90,23 @@ interface Clusters {
     | Error
     | BadRequestResponse;
 
+  /**
+   * Permanently removes a cluster that is stuck in Finalizing state.
+   * Requires a reason for audit purposes.
+   */
+  @route("/{cluster_id}/force-delete")
+  @post
+  @summary("Force-delete a cluster")
+  @operationId("forceDeleteCluster")
+  forceDeleteCluster(
+    /** Cluster ID */
+    @path cluster_id: string,
+    @body body: ForceDeleteRequest,
+  ): {
+    @statusCode statusCode: 204;
+  } | NotFoundResponse
+    | Error
+    | BadRequestResponse
+    | ConflictResponse;
+
 }

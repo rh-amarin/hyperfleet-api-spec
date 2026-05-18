@@ -17,7 +17,7 @@ info:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
   title: HyperFleet API
-  version: 1.0.14
+  version: 1.0.15
 host: hyperfleet.redhat.com
 basePath: /
 schemes:
@@ -291,6 +291,47 @@ paths:
       description: Patch a specific cluster by ID
       operationId: patchClusterById
       summary: Patch cluster by ID
+  '/api/hyperfleet/v1/clusters/{cluster_id}/force-delete':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/problem+json
+      parameters:
+        - description: Cluster ID
+          in: path
+          name: cluster_id
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/ForceDeleteRequest'
+      responses:
+        '204':
+          description: >-
+            There is no content to send for this request, but the headers may be
+            useful. 
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '404':
+          description: The server cannot find the requested resource.
+        '409':
+          description: The request conflicts with the current state of the server.
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
+      tags:
+        - Clusters
+      description: |-
+        Permanently removes a cluster that is stuck in Finalizing state.
+        Requires a reason for audit purposes.
+      operationId: forceDeleteCluster
+      summary: Force-delete a cluster
   '/api/hyperfleet/v1/clusters/{cluster_id}/nodepools':
     get:
       produces:
@@ -572,6 +613,52 @@ paths:
       description: Patch a specific nodepool within a cluster
       operationId: patchNodePoolById
       summary: Patch nodepool by ID
+  '/api/hyperfleet/v1/clusters/{cluster_id}/nodepools/{nodepool_id}/force-delete':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/problem+json
+      parameters:
+        - description: Cluster ID
+          in: path
+          name: cluster_id
+          required: true
+          type: string
+        - description: NodePool ID
+          in: path
+          name: nodepool_id
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/ForceDeleteRequest'
+      responses:
+        '204':
+          description: >-
+            There is no content to send for this request, but the headers may be
+            useful. 
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '404':
+          description: The server cannot find the requested resource.
+        '409':
+          description: The request conflicts with the current state of the server.
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - BearerAuth: []
+      tags:
+        - NodePools
+      description: |-
+        Permanently removes a nodepool that is stuck in Finalizing state.
+        Requires a reason for audit purposes.
+      operationId: forceDeleteNodePool
+      summary: Force-delete a nodepool
   '/api/hyperfleet/v1/clusters/{cluster_id}/nodepools/{nodepool_id}/statuses':
     get:
       produces:
@@ -1439,6 +1526,17 @@ definitions:
       - type
       - title
       - status
+    type: object
+  ForceDeleteRequest:
+    description: Request body for force-delete operations
+    properties:
+      reason:
+        description: Reason for force-deleting the resource
+        maxLength: 1024
+        minLength: 1
+        type: string
+    required:
+      - reason
     type: object
   NodePool:
     example:
