@@ -15,9 +15,9 @@ info:
     Sentinel operator handles all orchestration logic.
     Adapters handle the specifics of managing spec
 tags:
-  - name: Clusters
   - name: Cluster statuses
   - name: NodePool statuses
+  - name: Clusters
   - name: NodePools
 paths:
   /api/hyperfleet/v1/clusters:

@@ -47,9 +47,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          CURRENT=$(grep -oP '(?<=version: ")[^"]+' main.tsp)
+          CURRENT=$(grep -oP '(?<=version: ")[^"]+' core/main.tsp)
           if [ -z "$CURRENT" ]; then
-            echo "::error::Failed to extract version from main.tsp — check the @info decorator format" >&2
+            echo "::error::Failed to extract version from core/main.tsp — check the @info decorator format" >&2
             exit 1
           fi
           LATEST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null | sed 's/^v//' || echo "")
@@ -59,10 +59,10 @@ jobs:
           fi
           HIGHEST=$(printf '%s\n%s\n' "$CURRENT" "$LATEST" | sort -V | tail -1)
           if [ "$CURRENT" = "$LATEST" ]; then
-            echo "::error::Version '$CURRENT' matches latest release tag 'v$LATEST' — bump the version in main.tsp before merging."
+            echo "::error::Version '$CURRENT' matches latest release tag 'v$LATEST' — bump the version in core/main.tsp before merging."
             exit 1
           elif [ "$HIGHEST" != "$CURRENT" ]; then
-            echo "::error::Version '$CURRENT' is lower than latest release 'v$LATEST' — version in main.tsp must be strictly greater."
+            echo "::error::Version '$CURRENT' is lower than latest release 'v$LATEST' — version in core/main.tsp must be strictly greater."
             exit 1
           fi
           echo "Version bump OK: $LATEST → $CURRENT"

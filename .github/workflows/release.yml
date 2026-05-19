@@ -28,9 +28,9 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=version: ")[^"]+' main.tsp)
+          VERSION=$(grep -oP '(?<=version: ")[^"]+' core/main.tsp)
           if [ -z "$VERSION" ]; then
-            echo "::error::Failed to extract version from main.tsp — check the @info decorator format" >&2
+            echo "::error::Failed to extract version from core/main.tsp — check the @info decorator format" >&2
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"

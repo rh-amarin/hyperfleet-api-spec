@@ -58,26 +58,17 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Define the aliases file for the provider
-ALIASES_FILE="aliases-${PROVIDER}.tsp"
-
-# Check if the aliases file exists
-if [ ! -f "$ALIASES_FILE" ]; then
-    echo -e "${RED}Error: Provider aliases file not found: ${ALIASES_FILE}${NC}"
+# Resolve the provider entry point
+PROVIDER_ENTRY="${PROVIDER}/main.tsp"
+if [ ! -f "$PROVIDER_ENTRY" ]; then
+    echo -e "${RED}Error: Provider entry point not found: ${PROVIDER_ENTRY}${NC}"
     echo ""
     echo "Available providers:"
-    for file in aliases-*.tsp; do
-        if [ -f "$file" ]; then
-            provider_name=$(echo "$file" | sed 's/aliases-\(.*\)\.tsp/\1/')
-            echo "  - $provider_name"
+    for dir in */; do
+        if [ -f "${dir}main.tsp" ]; then
+            echo "  - ${dir%/}"
         fi
     done
-    exit 1
-fi
-
-# Check if main.tsp exists
-if [ ! -f "main.tsp" ]; then
-    echo -e "${RED}Error: main.tsp not found in current directory${NC}"
     exit 1
 fi
 
@@ -105,24 +96,15 @@ else
 fi
 echo ""
 
-# Step 1: Re-link aliases.tsp to the provider-specific aliases file
-echo -e "${YELLOW}Step 1: Linking aliases.tsp to ${ALIASES_FILE}${NC}"
-if [ -L "aliases.tsp" ] || [ -f "aliases.tsp" ]; then
-    rm -f aliases.tsp
-fi
-ln -sf "$ALIASES_FILE" aliases.tsp
-echo -e "${GREEN}✓ Linked aliases.tsp → ${ALIASES_FILE}${NC}"
-echo ""
-
-# Step 2: Create output directory for the provider
+# Step 1: Create output directory for the provider
 OUTPUT_DIR="schemas/${PROVIDER}"
-echo -e "${YELLOW}Step 2: Preparing output directory...${NC}"
+echo -e "${YELLOW}Step 1: Preparing output directory...${NC}"
 mkdir -p "$OUTPUT_DIR"
 echo -e "${GREEN}✓ Created output directory: ${OUTPUT_DIR}${NC}"
 echo ""
 
-# Step 3: Compile TypeSpec to generate OpenAPI schema
-echo -e "${YELLOW}Step 3: Compiling TypeSpec...${NC}"
+# Step 2: Compile TypeSpec to generate OpenAPI schema
+echo -e "${YELLOW}Step 2: Compiling TypeSpec from ${PROVIDER_ENTRY}...${NC}"
 TEMP_OUTPUT_DIR="tsp-output-${PROVIDER}"
 
 # Cleanup function to remove temporary directory on exit
@@ -133,7 +115,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if "$TSP" compile main.tsp --output-dir "$TEMP_OUTPUT_DIR"; then
+if "$TSP" compile "$PROVIDER_ENTRY" --output-dir "$TEMP_OUTPUT_DIR"; then
     # Move the generated schema to the provider-specific directory
     if [ -f "${TEMP_OUTPUT_DIR}/schema/openapi.yaml" ]; then
         mv "${TEMP_OUTPUT_DIR}/schema/openapi.yaml" "${OUTPUT_DIR}/openapi.yaml"
@@ -152,10 +134,10 @@ else
     exit 1
 fi
 
-# Step 4: Convert to OpenAPI 2.0 (Swagger) if requested
+# Step 3: Convert to OpenAPI 2.0 (Swagger) if requested
 if [ "$GENERATE_SWAGGER" = true ]; then
     echo ""
-    echo -e "${YELLOW}Step 4: Converting to OpenAPI 2.0 (Swagger)...${NC}"
+    echo -e "${YELLOW}Step 3: Converting to OpenAPI 2.0 (Swagger)...${NC}"
     
     if npx api-spec-converter \
         --from=openapi_3 \

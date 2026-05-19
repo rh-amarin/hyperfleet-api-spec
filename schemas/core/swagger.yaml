@@ -1866,9 +1866,9 @@ securityDefinitions:
     name: Authorization
     type: apiKey
 tags:
-  - name: Clusters
   - name: Cluster statuses
   - name: NodePool statuses
+  - name: Clusters
   - name: NodePools
 x-components:
   parameters:
