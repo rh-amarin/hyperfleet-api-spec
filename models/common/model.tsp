@@ -263,3 +263,13 @@ model ResourceCondition {
     const ExampleAdapter2HealthMessage: string = "All adapter2 runtime operations completed successfully";
     const ExampleAdapter2AvailableReason: string = "This adapter2 is available";
     const ExampleAdapter2AvailableMessage: string = "This adapter2 is available";
+
+/**
+ * Request body for force-delete operations
+ */
+model ForceDeleteRequest {
+  /** Reason for force-deleting the resource */
+  @minLength(1)
+  @maxLength(1024)
+  reason: string;
+}

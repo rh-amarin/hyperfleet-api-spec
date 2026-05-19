@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: HyperFleet API
-  version: 1.0.14
+  version: 1.0.15
   contact:
     name: HyperFleet Team
     url: https://github.com/openshift-hyperfleet
@@ -238,6 +238,45 @@ paths:
                 $ref: '#/components/schemas/Error'
       tags:
         - Clusters
+      security:
+        - BearerAuth: []
+  /api/hyperfleet/v1/clusters/{cluster_id}/force-delete:
+    post:
+      operationId: forceDeleteCluster
+      summary: Force-delete a cluster
+      description: |-
+        Permanently removes the cluster record from the database for a cluster stuck in Finalizing state.
+        This is a database-only operation. Requires a reason for audit purposes.
+      parameters:
+        - name: cluster_id
+          in: path
+          required: true
+          description: Cluster ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '404':
+          description: The server cannot find the requested resource.
+        '409':
+          description: The request conflicts with the current state of the server.
+        default:
+          description: An unexpected error response.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Clusters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForceDeleteRequest'
       security:
         - BearerAuth: []
   /api/hyperfleet/v1/clusters/{cluster_id}/nodepools:
@@ -489,6 +528,51 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NodePoolPatchRequest'
+      security:
+        - BearerAuth: []
+  /api/hyperfleet/v1/clusters/{cluster_id}/nodepools/{nodepool_id}/force-delete:
+    post:
+      operationId: forceDeleteNodePool
+      summary: Force-delete a nodepool
+      description: |-
+        Permanently removes the nodepool record from the database for a nodepool stuck in Finalizing state.
+        This is a database-only operation. Requires a reason for audit purposes.
+      parameters:
+        - name: cluster_id
+          in: path
+          required: true
+          description: Cluster ID
+          schema:
+            type: string
+        - name: nodepool_id
+          in: path
+          required: true
+          description: NodePool ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '404':
+          description: The server cannot find the requested resource.
+        '409':
+          description: The request conflicts with the current state of the server.
+        default:
+          description: An unexpected error response.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - NodePools
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForceDeleteRequest'
       security:
         - BearerAuth: []
   /api/hyperfleet/v1/clusters/{cluster_id}/nodepools/{nodepool_id}/statuses:
@@ -1279,6 +1363,17 @@ components:
             $ref: '#/components/schemas/ValidationError'
           description: Field-level validation errors (for validation failures)
       description: RFC 9457 Problem Details error format with HyperFleet extensions
+    ForceDeleteRequest:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          description: Reason for force-deleting the resource
+      description: Request body for force-delete operations
     NodePool:
       type: object
       required:
