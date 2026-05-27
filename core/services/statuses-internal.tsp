@@ -14,7 +14,24 @@ namespace HyperFleet;
 @route("/clusters/{cluster_id}/statuses")
 @useAuth(HyperFleet.BearerAuth)
 @tag("Cluster statuses")
-interface ClusterStatusesInternal {
+interface ClusterStatuses {
+  /**
+   * Returns adapter status reports for this cluster
+   */
+  @route("")
+  @get
+  @summary("List all adapter statuses for cluster")
+  @operationId("getClusterStatuses")
+  getClusterStatuses(
+    /**
+     * Cluster ID
+     */
+    @path cluster_id: string,
+    ...QueryParams
+  ): Body<AdapterStatusList>
+    | NotFoundResponse
+    | BadRequestResponse;
+
   @route("")
   @put
   @summary("Adapter creates or updates cluster status")
@@ -37,7 +54,25 @@ interface ClusterStatusesInternal {
 @tag("NodePool statuses")
 @route("/clusters/{cluster_id}/nodepools/{nodepool_id}/statuses")
 @useAuth(HyperFleet.BearerAuth)
-interface NodePoolStatusesInternal {
+interface NodePoolStatuses {
+  /**
+   * Returns adapter status reports for this nodepool
+   */
+  @route("")
+  @get
+  @summary("List all adapter statuses for nodepools")
+  @operationId("getNodePoolsStatuses")
+  getNodePoolsStatuses(
+    /**
+     * Cluster ID
+     */
+    @path cluster_id: string,
+    @path nodepool_id: string,
+    ...QueryParams
+  ): Body<AdapterStatusList>
+    | Error
+    | BadRequestResponse;
+
   @route("")
   @put
   @summary("Adapter creates or updates nodepool status")
@@ -59,47 +94,5 @@ interface NodePoolStatusesInternal {
     | (CreatedResponse & AdapterStatus)
     | BadRequestResponse
     | NotFoundResponse
-    | ConflictResponse;
-}
-
-@tag("Resource statuses")
-@route("/resources/{resource_id}/statuses")
-@useAuth(HyperFleet.BearerAuth)
-interface ResourceStatusesInternal {
-  @route("")
-  @put
-  @summary("Adapter creates or updates resource status")
-  @operationId("putResourceStatuses")
-  @doc("Adapters call this endpoint to report status for a resource after each evaluation. The adapter's status entry is created if it doesn't exist, or updated if it does (upserted by adapter name).")
-  putResourceStatuses(
-    @path resource_id: string,
-    @body body: AdapterStatusCreateRequest,
-  ):
-    | (CreatedResponse & AdapterStatus)
-    | BadRequestResponse
-    | NotFoundResponse
-    | ConflictResponse;
-}
-
-@tag("Resources")
-@route("/resources")
-@useAuth(HyperFleet.BearerAuth)
-interface ResourcesForceDelete {
-  /**
-   * Permanently removes the resource record from the database for a resource stuck in Finalizing state.
-   * This is a database-only operation. Requires a reason for audit purposes.
-   */
-  @route("/{resource_id}/force-delete")
-  @post
-  @summary("Force-delete a resource")
-  @operationId("forceDeleteResource")
-  forceDeleteResource(
-    @path resource_id: string,
-    @body body: ForceDeleteRequest,
-  ): {
-    @statusCode statusCode: 204;
-  } | Error
-    | NotFoundResponse
-    | BadRequestResponse
     | ConflictResponse;
 }
