@@ -11,11 +11,10 @@ import "./core/models/nodepool/example_nodepool.tsp";
 import "./core/models/nodepool/example_post.tsp";
 import "./core/models/nodepool/example_patch.tsp";
 import "./core/services/statuses-internal.tsp";
+import "./core/services/resources-internal.tsp";
 
 import "./shared/services/clusters.tsp";
-import "./shared/services/statuses.tsp";
 import "./shared/services/nodepools.tsp";
-import "./shared/services/resources.tsp";
 import "./core/services/force-delete-internal.tsp";
 
 using Http;
@@ -31,7 +30,7 @@ using OpenAPI;
  */
 @service(#{ title: "HyperFleet API" })
 @info(#{
-  version: "1.0.18",
+  version: "1.0.20",
   contact: #{
     name: "HyperFleet Team",
     url: "https://github.com/openshift-hyperfleet",
