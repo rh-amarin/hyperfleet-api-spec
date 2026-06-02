@@ -1,6 +1,8 @@
 import "@typespec/http";
 import "@typespec/openapi";
 import "../statuses/model.tsp";
+import "./example_errors.tsp";
+
 using Http;
 using OpenAPI;
 
@@ -56,55 +58,98 @@ model ValidationError {
     message: string;
 }
 
-/**
- * RFC 9457 Problem Details error format with HyperFleet extensions
- */
-@defaultResponse
-model Error {
-    @header contentType: "application/problem+json";
-    /** URI reference identifying the problem type */
-    @format("uri")
-    @example("https://api.hyperfleet.io/errors/validation-error")
-    type: string;
+namespace HyperFleet {
+    /**
+     * RFC 9457 Problem Details for HTTP APIs
+     */
+    @example(ExampleError500)
+    model ProblemDetails {
+        /** URI reference identifying the problem type */
+        @format("uri")
+        type: string;
 
-    /** Short human-readable summary of the problem */
-    @example("Validation Failed")
-    title: string;
+        /** Short human-readable summary of the problem */
+        title: string;
 
-    /** HTTP status code */
-    @example(400)
-    status: integer;
+        /** HTTP status code */
+        status: integer;
 
-    /** Human-readable explanation specific to this occurrence */
-    @example("The cluster name field is required")
-    detail?: string;
+        /** Human-readable explanation specific to this occurrence */
+        detail?: string;
 
-    /** URI reference for this specific occurrence */
-    @format("uri-reference")
-    @example("/api/hyperfleet/v1/clusters")
-    instance?: string;
+        /** URI reference for this specific occurrence */
+        @format("uri-reference")
+        instance?: string;
 
-    /** Machine-readable error code in HYPERFLEET-CAT-NUM format */
-    @example("HYPERFLEET-VAL-001")
-    code?: string;
+        /** Machine-readable error code in HYPERFLEET-CAT-NUM format */
+        code?: string;
 
-    /** RFC3339 timestamp of when the error occurred */
-    @format("date-time")
-    @example("2024-01-15T10:30:00Z")
-    timestamp?: string;
+        /** RFC3339 timestamp of when the error occurred */
+        @format("date-time")
+        timestamp?: string;
 
-    /** Distributed trace ID for correlation */
-    @example("abc123def456")
-    trace_id?: string;
+        /** Distributed trace ID for correlation */
+        trace_id?: string;
 
-    /** Field-level validation errors (for validation failures) */
-    errors?: ValidationError[];
-}
+        /** Field-level validation errors (for validation failures) */
+        errors?: ValidationError[];
+    }
 
-model ErrorResponse<ErrorCode> {
-    @statusCode statusCode: ErrorCode;
-    @header contentType: "application/problem+json";
-    @body error: Error;
+    @example(ExampleError400)
+    model BadRequestDetails extends ProblemDetails {}
+
+    @example(ExampleError401)
+    model UnauthorizedDetails extends ProblemDetails {}
+
+    @example(ExampleError403)
+    model ForbiddenDetails extends ProblemDetails {}
+
+    @example(ExampleError404)
+    model NotFoundDetails extends ProblemDetails {}
+
+    @example(ExampleError409)
+    model ConflictDetails extends ProblemDetails {}
+
+    @defaultResponse
+    model Error {
+        @header contentType: "application/problem+json";
+        @body body: ProblemDetails;
+    }
+
+    @doc("The server could not understand the request due to invalid syntax.")
+    model BadRequestResponse {
+        @statusCode statusCode: 400;
+        @header contentType: "application/problem+json";
+        @body body: BadRequestDetails;
+    }
+
+    @doc("The request requires valid authentication credentials.")
+    model UnauthorizedResponse {
+        @statusCode statusCode: 401;
+        @header contentType: "application/problem+json";
+        @body body: UnauthorizedDetails;
+    }
+
+    @doc("The client does not have permission to perform this action.")
+    model ForbiddenResponse {
+        @statusCode statusCode: 403;
+        @header contentType: "application/problem+json";
+        @body body: ForbiddenDetails;
+    }
+
+    @doc("The server cannot find the requested resource.")
+    model NotFoundResponse {
+        @statusCode statusCode: 404;
+        @header contentType: "application/problem+json";
+        @body body: NotFoundDetails;
+    }
+
+    @doc("The request conflicts with the current state of the server.")
+    model ConflictResponse {
+        @statusCode statusCode: 409;
+        @header contentType: "application/problem+json";
+        @body body: ConflictDetails;
+    }
 }
 
 model APIResource {
@@ -154,9 +199,11 @@ model SearchParams {
 model QueryParams {
     ...SearchParams;
     @query
+    @minValue(1)
     page?: int32 = 1;
 
     @query
+    @minValue(1)
     pageSize?: int32 = 20;
 
     @query
@@ -244,26 +291,26 @@ model ResourceCondition {
   @format("date-time") last_updated_time: string;
 }
 
-    const ExampleLastKnownReconciledReason: string = "AllAdaptersReconciled";
-    const ExampleLastKnownReconciledMessage: string = "All required adapters report Available=True for the tracked generation";
-    const ExampleReconciledReason: string = "ReconciledAll";
-    const ExampleReconciledMessage: string = "All required adapters reported Available=True or Finalized=True at the current generation";
-    const ExampleAdapter1: string = "adapter1";
-    const ExampleAdapter2: string = "adapter2";
-    const ExampleAdapter1AppliedReason: string = "Validation job applied";
-    const ExampleAdapter1AppliedMessage: string = "Adapter1 validation job applied successfully";
-    const ExampleAdapter1HealthReason: string = "All adapter1 operations completed successfully";
-    const ExampleAdapter1HealthMessage: string = "All adapter1 runtime operations completed successfully";
-    const ExampleAdapter1AvailableReason: string = "This adapter1 is available";
-    const ExampleAdapter1AvailableMessage: string = "This adapter1 is available";
-    const ExampleAdapter1FinalizedReason: string = "All resources deleted; cleanup confirmed";
-    const ExampleAdapter1FinalizedMessage: string = "All resources deleted; cleanup confirmed";
-    const ExampleAdapter2AppliedReason: string = "Validation job applied";
-    const ExampleAdapter2AppliedMessage: string = "Adapter2 validation job applied successfully";
-    const ExampleAdapter2HealthReason: string = "All adapter2 operations completed successfully";
-    const ExampleAdapter2HealthMessage: string = "All adapter2 runtime operations completed successfully";
-    const ExampleAdapter2AvailableReason: string = "This adapter2 is available";
-    const ExampleAdapter2AvailableMessage: string = "This adapter2 is available";
+const ExampleLastKnownReconciledReason: string = "AllAdaptersReconciled";
+const ExampleLastKnownReconciledMessage: string = "All required adapters report Available=True for the tracked generation";
+const ExampleReconciledReason: string = "ReconciledAll";
+const ExampleReconciledMessage: string = "All required adapters reported Available=True or Finalized=True at the current generation";
+const ExampleAdapter1: string = "adapter1";
+const ExampleAdapter2: string = "adapter2";
+const ExampleAdapter1AppliedReason: string = "Validation job applied";
+const ExampleAdapter1AppliedMessage: string = "Adapter1 validation job applied successfully";
+const ExampleAdapter1HealthReason: string = "All adapter1 operations completed successfully";
+const ExampleAdapter1HealthMessage: string = "All adapter1 runtime operations completed successfully";
+const ExampleAdapter1AvailableReason: string = "This adapter1 is available";
+const ExampleAdapter1AvailableMessage: string = "This adapter1 is available";
+const ExampleAdapter1FinalizedReason: string = "All resources deleted; cleanup confirmed";
+const ExampleAdapter1FinalizedMessage: string = "All resources deleted; cleanup confirmed";
+const ExampleAdapter2AppliedReason: string = "Validation job applied";
+const ExampleAdapter2AppliedMessage: string = "Adapter2 validation job applied successfully";
+const ExampleAdapter2HealthReason: string = "All adapter2 operations completed successfully";
+const ExampleAdapter2HealthMessage: string = "All adapter2 runtime operations completed successfully";
+const ExampleAdapter2AvailableReason: string = "This adapter2 is available";
+const ExampleAdapter2AvailableMessage: string = "This adapter2 is available";
 
 /**
  * Request body for force-delete operations

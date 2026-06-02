@@ -30,8 +30,9 @@ interface ClusterStatuses {
     ...QueryParams
   ): Body<AdapterStatusList>
     | Error
-    | NotFoundResponse
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse;
 
   @route("")
   @put
@@ -47,9 +48,10 @@ interface ClusterStatuses {
     @body body: AdapterStatusCreateRequest,
   ):
     | (CreatedResponse & AdapterStatus)
+    | Error
     | BadRequestResponse
-    | NotFoundResponse
-    | ConflictResponse;
+    | UnauthorizedResponse
+    | NotFoundResponse;
 }
 
 @tag("NodePool statuses")
@@ -72,8 +74,9 @@ interface NodePoolStatuses {
     ...QueryParams
   ): Body<AdapterStatusList>
     | Error
-    | NotFoundResponse
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse;
 
   @route("")
   @put
@@ -94,7 +97,9 @@ interface NodePoolStatuses {
     @body body: AdapterStatusCreateRequest,
   ):
     | (CreatedResponse & AdapterStatus)
+    | Error
     | BadRequestResponse
-    | NotFoundResponse
-    | ConflictResponse;
+    | UnauthorizedResponse
+    | NotFoundResponse;
 }
+

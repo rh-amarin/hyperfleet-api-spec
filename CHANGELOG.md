@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.20] - 2026-06-02
+
+### Fixed
+
+- Typed error response models (`BadRequestResponse`, `UnauthorizedResponse`, `NotFoundResponse`, `ConflictResponse`) now emit an `application/problem+json` body schema per RFC 9457 (HYPERFLEET-993)
+- `UnauthorizedResponse` (401) added to all status and force-delete endpoints
+- `ConflictResponse` (409) removed from status create/update endpoints (upsert semantics make conflict impossible)
+- Default `Error` response added to status create/update endpoints where it was previously missing
+
+### Changed
+
+- `page` and `pageSize` query parameters have `@minValue(1)` constraints (HYPERFLEET-993)
+- Error models scoped to `namespace HyperFleet {}` block to avoid collision with TypeSpec.Http built-ins
+- Error example constants extracted to `shared/models/common/example_errors.tsp`
+
 ## [1.0.18] - 2026-05-26
 
 ### Changed
@@ -179,7 +194,8 @@ First official stable release of the HyperFleet API specification.
 - Interactive API documentation
 
 <!-- Links -->
-[Unreleased]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.18...HEAD
+[Unreleased]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.20...HEAD
+[1.0.20]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.18...v1.0.20
 [1.0.18]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.17...v1.0.18
 [1.0.17]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.16...v1.0.17
 [1.0.16]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.15...v1.0.16

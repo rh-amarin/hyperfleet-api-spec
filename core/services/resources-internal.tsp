@@ -24,7 +24,8 @@ interface Resources {
   @operationId("getResources")
   getResources(...QueryParams): Body<ResourceList>
     | Error
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse;
 
   /**
    * Returns a single resource by its ID.
@@ -38,8 +39,9 @@ interface Resources {
     @path resource_id: string,
   ): Resource
     | Error
-    | NotFoundResponse
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse;
 
   /**
    * Create a new resource. Only top-level entity types (no parent) can be created
@@ -53,7 +55,8 @@ interface Resources {
     @statusCode statusCode: 201;
     @body resource: Resource;
   } | Error
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse;
 
   /**
    * Patch a resource by ID. Supports partial updates to spec, labels, and references.
@@ -67,8 +70,9 @@ interface Resources {
     @body body: ResourcePatchRequest,
   ): Resource
     | Error
-    | NotFoundResponse
     | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse
     | ConflictResponse;
 
   /**
@@ -85,10 +89,11 @@ interface Resources {
   ): {
     @statusCode statusCode: 202;
     @body resource: Resource;
-  } | NotFoundResponse
-    | ConflictResponse
-    | Error
-    | BadRequestResponse;
+  } | Error
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse
+    | ConflictResponse;
 
   /**
    * Permanently removes the resource record from the database for a resource stuck in Finalizing state.
@@ -104,8 +109,9 @@ interface Resources {
   ): {
     @statusCode statusCode: 204;
   } | Error
-    | NotFoundResponse
     | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse
     | ConflictResponse;
 }
 
@@ -125,8 +131,9 @@ interface ResourceStatuses {
     ...QueryParams,
   ): Body<AdapterStatusList>
     | Error
-    | NotFoundResponse
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse;
 
   @route("")
   @put
@@ -138,7 +145,8 @@ interface ResourceStatuses {
     @body body: AdapterStatusCreateRequest,
   ):
     | (CreatedResponse & AdapterStatus)
+    | Error
     | BadRequestResponse
-    | NotFoundResponse
-    | ConflictResponse;
+    | UnauthorizedResponse
+    | NotFoundResponse;
 }

@@ -21,7 +21,8 @@ interface Clusters {
   @doc("Returns a list of all clusters.")
   getClusters(...QueryParams): Body<ClusterList>
     | Error
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse;
 
   @route("/{cluster_id}")
   @get
@@ -33,7 +34,9 @@ interface Clusters {
     @path cluster_id: string,
   ): Cluster
     | Error
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse;
 
   /**
    * Create a new cluster resource.
@@ -52,7 +55,9 @@ interface Clusters {
     @statusCode statusCode: 201;
     @body cluster: Cluster;
   } | Error
-    | BadRequestResponse;
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | ConflictResponse;
 
   /**
    * Patch a specific cluster by ID
@@ -67,8 +72,9 @@ interface Clusters {
     @body body: ClusterPatchRequest,
   ): Cluster
     | Error
-    | NotFoundResponse
     | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse
     | ConflictResponse;
 
   /**
@@ -86,8 +92,9 @@ interface Clusters {
   ): {
     @statusCode statusCode: 202;
     @body cluster: Cluster;
-  } | NotFoundResponse
-    | Error
-    | BadRequestResponse;
+  } | Error
+    | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse;
 
 }

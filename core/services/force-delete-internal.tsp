@@ -28,8 +28,9 @@ interface ClustersForceDelete {
   ): {
     @statusCode statusCode: 204;
   } | Error
-    | NotFoundResponse
     | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse
     | ConflictResponse;
 }
 
@@ -54,7 +55,8 @@ interface NodePoolsForceDelete {
   ): {
     @statusCode statusCode: 204;
   } | Error
-    | NotFoundResponse
     | BadRequestResponse
+    | UnauthorizedResponse
+    | NotFoundResponse
     | ConflictResponse;
 }

@@ -22,7 +22,8 @@ interface NodePools {
     @operationId("getNodePools")
     getNodePools(...QueryParams): Body<NodePoolList>
       | Error
-      | BadRequestResponse;
+      | BadRequestResponse
+      | UnauthorizedResponse;
 
     /**
      * Returns the list of all nodepools for a cluster
@@ -38,7 +39,8 @@ interface NodePools {
         ...QueryParams,
     ): Body<NodePoolList>
       | Error
-      | BadRequestResponse;
+      | BadRequestResponse
+      | UnauthorizedResponse;
 
     /**
      * Create a NodePool for a cluster
@@ -56,6 +58,8 @@ interface NodePools {
          (CreatedResponse & NodePoolCreateResponse)
          | Error
          | BadRequestResponse
+         | UnauthorizedResponse
+         | NotFoundResponse
          | ConflictResponse;
 
     /**
@@ -72,7 +76,9 @@ interface NodePools {
         @path nodepool_id: string,
     ): NodePool
       | Error
-      | BadRequestResponse;
+      | BadRequestResponse
+      | UnauthorizedResponse
+      | NotFoundResponse;
 
     /**
      * Marks the nodepool for deletion by setting deleted_time and deleted_by. Does not affect the parent cluster.
@@ -91,9 +97,10 @@ interface NodePools {
     ): {
       @statusCode statusCode: 202;
       @body nodepool: NodePool;
-    } | NotFoundResponse
-      | Error
-      | BadRequestResponse;
+    } | Error
+      | BadRequestResponse
+      | UnauthorizedResponse
+      | NotFoundResponse;
 
     /**
      * Patch a specific nodepool within a cluster
@@ -110,7 +117,8 @@ interface NodePools {
         @body body: NodePoolPatchRequest,
     ): NodePool
       | Error
-      | NotFoundResponse
       | BadRequestResponse
+      | UnauthorizedResponse
+      | NotFoundResponse
       | ConflictResponse;
 }
