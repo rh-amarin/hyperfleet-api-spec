@@ -4,13 +4,9 @@ This repository supports the development of the Hyperfleet OpenAPI contract, but
 
 This project hosts the TypeSpec files to generate the HyperFleet core OpenAPI specification. TypeSpec is an implementation detail providing better ergonomics than writing contracts in plain YAML. The repository generates the core provider contract; the provider-specific contract lives in [hyperfleet-api-spec-template](https://github.com/openshift-hyperfleet/hyperfleet-api-spec-template).
 
-Access to the OpenAPI contract source of truth in hyperfleet-api repository:
+Browse the generated core contract in Swagger UI (GitHub Pages):
 
 - <https://openshift-hyperfleet.github.io/hyperfleet-api-spec/index.html>
-
-Access directly to the latest generated contract in this repository:
-
-- core: <https://openshift-hyperfleet.github.io/hyperfleet-api-spec/core.html>
 
 ## Consuming the API Specifications
 
@@ -63,6 +59,7 @@ The repository is organized with root-level configuration files and two main dir
 
 ### Root-Level Files
 
+- **`index.html`** - Swagger UI for browsing the core contract on GitHub Pages (swagger-ui-dist 5.32.6)
 - **`main.tsp`** - Main TypeSpec entry point that imports all service definitions
 - **`tspconfig.yaml`** - TypeSpec compiler configuration
 
