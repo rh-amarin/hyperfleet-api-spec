@@ -104,7 +104,6 @@ const exampleAdapterStatusCreateRequest: AdapterStatusCreateRequest = (#{
 
 // Example AdapterStatusList response (for GET /clusters/{id}/statuses)
 const exampleAdapterStatusList: AdapterStatusList = (#{
-  kind: "AdapterStatusList",
   page: 1,
   size: 2,
   total: 2,

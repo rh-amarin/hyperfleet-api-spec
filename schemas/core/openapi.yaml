@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: HyperFleet API
-  version: 1.0.20
+  version: 1.0.21
   contact:
     name: HyperFleet Team
     url: https://github.com/openshift-hyperfleet
@@ -1689,14 +1689,11 @@ components:
     AdapterStatusList:
       type: object
       required:
-        - kind
         - page
         - size
         - total
         - items
       properties:
-        kind:
-          type: string
         page:
           type: integer
           format: int32
@@ -1712,7 +1709,6 @@ components:
             $ref: '#/components/schemas/AdapterStatus'
       description: List of adapter statuses with pagination metadata
       example:
-        kind: AdapterStatusList
         page: 1
         size: 2
         total: 2
@@ -1918,14 +1914,11 @@ components:
     ClusterList:
       type: object
       required:
-        - kind
         - page
         - size
         - total
         - items
       properties:
-        kind:
-          type: string
         page:
           type: integer
           format: int32
@@ -2272,14 +2265,11 @@ components:
     NodePoolList:
       type: object
       required:
-        - kind
         - page
         - size
         - total
         - items
       properties:
-        kind:
-          type: string
         page:
           type: integer
           format: int32
@@ -2603,14 +2593,11 @@ components:
     ResourceList:
       type: object
       required:
-        - kind
         - page
         - size
         - total
         - items
       properties:
-        kind:
-          type: string
         page:
           type: integer
           format: int32

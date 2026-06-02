@@ -82,7 +82,6 @@ model ResourcePatchRequest {
 }
 
 model ResourceList {
-  kind: string;
   page: int32;
   size: int32;
   total: int64;

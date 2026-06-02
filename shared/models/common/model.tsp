@@ -214,7 +214,6 @@ model QueryParams {
 }
 
 model List<T> {
-    kind: string;
     page: int32;
     size: int32;
     total: int32;

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.21] - 2026-06-02
+
+### Removed
+
+- `kind` property from `ClusterList`, `NodePoolList`, `AdapterStatusList`, and `ResourceList` list response schemas (HYPERFLEET-1143)
+
 ## [1.0.20] - 2026-06-02
 
 ### Fixed
@@ -194,7 +200,8 @@ First official stable release of the HyperFleet API specification.
 - Interactive API documentation
 
 <!-- Links -->
-[Unreleased]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.20...HEAD
+[Unreleased]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.21...HEAD
+[1.0.21]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.20...v1.0.21
 [1.0.20]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.18...v1.0.20
 [1.0.18]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.17...v1.0.18
 [1.0.17]: https://github.com/openshift-hyperfleet/hyperfleet-api-spec/compare/v1.0.16...v1.0.17
