@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: HyperFleet API
-  version: 1.0.21
+  version: 1.0.22
   contact:
     name: HyperFleet Team
     url: https://github.com/openshift-hyperfleet
@@ -2189,6 +2189,7 @@ components:
         spec:
           $ref: '#/components/schemas/NodePoolSpec'
       example:
+        kind: NodePool
         name: worker-pool-1
         labels:
           environment: production
