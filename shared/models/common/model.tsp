@@ -23,19 +23,10 @@ model ObjectReference {
     ...ID;
 
     /** Resource kind */
-    kind?: string;
+    kind: string;
 
     /** Resource URI */
     href?: string;
-}
-model ObjectReference2<Kind> {
-    ...ID;
-
-    /** Resource kind */
-    kind: Kind;
-
-    /** Resource URI */
-    href: string;
 }
 
 /**
