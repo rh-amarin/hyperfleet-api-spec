@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.24] - 2026-06-24
+
+### Changed
+
+- Rename `pageSize` query parameter to `size` (HYPERFLEET-1272)
+- Rename `orderBy` query parameter to `order` (HYPERFLEET-1272)
+
+### Removed
+
+- `OrderDirection` enum (unused; direction is encoded in the `order` string parameter)
+- Separate `order?: OrderDirection` query parameter (absorbed by renamed `order` string parameter)
+
 ## [1.0.23] - 2026-06-22
 
 ### Changed

@@ -175,11 +175,6 @@ model Page<Kind> {
     items: Kind[];
 }
 
-enum OrderDirection {
-    asc,
-    desc,
-}
-
 model SearchParams {
     /** Filter results using TSL (Tree Search Language) query syntax.
      * Examples: `status.conditions.Reconciled='True'`, `name in ('c1','c2')`, `labels.region='us-east'` */
@@ -195,13 +190,10 @@ model QueryParams {
 
     @query
     @minValue(1)
-    pageSize?: int32 = 20;
+    size?: int32 = 20;
 
     @query
-    orderBy?: string = "created_time";
-
-    @query
-    order?: OrderDirection;
+    order?: string = "created_time";
 }
 
 model List<T> {

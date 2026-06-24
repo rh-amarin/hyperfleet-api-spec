@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: HyperFleet API
-  version: 1.0.23
+  version: 1.0.24
   contact:
     name: HyperFleet Team
     url: https://github.com/openshift-hyperfleet
@@ -30,8 +30,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -387,8 +386,7 @@ paths:
             type: string
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -784,8 +782,7 @@ paths:
             type: string
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -894,8 +891,7 @@ paths:
             type: string
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -992,8 +988,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -1032,8 +1027,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -1333,8 +1327,7 @@ paths:
             type: string
         - $ref: '#/components/parameters/SearchParams'
         - $ref: '#/components/parameters/QueryParams.page'
-        - $ref: '#/components/parameters/QueryParams.pageSize'
-        - $ref: '#/components/parameters/QueryParams.orderBy'
+        - $ref: '#/components/parameters/QueryParams.size'
         - $ref: '#/components/parameters/QueryParams.order'
       responses:
         '200':
@@ -1429,13 +1422,6 @@ components:
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/OrderDirection'
-      explode: false
-    QueryParams.orderBy:
-      name: orderBy
-      in: query
-      required: false
-      schema:
         type: string
         default: created_time
       explode: false
@@ -1449,8 +1435,8 @@ components:
         minimum: 1
         default: 1
       explode: false
-    QueryParams.pageSize:
-      name: pageSize
+    QueryParams.size:
+      name: size
       in: query
       required: false
       schema:
@@ -2359,11 +2345,6 @@ components:
         href:
           type: string
           description: Resource URI
-    OrderDirection:
-      type: string
-      enum:
-        - asc
-        - desc
     ProblemDetails:
       type: object
       required:
